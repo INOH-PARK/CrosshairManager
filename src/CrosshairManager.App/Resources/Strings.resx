@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Tray.OpenSettings" xml:space="preserve"><value>Open settings</value></data>
+  <data name="Tray.ToggleOverlay" xml:space="preserve"><value>Show crosshair</value></data>
+  <data name="Tray.Presets" xml:space="preserve"><value>Presets</value></data>
+  <data name="Tray.Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Preset.builtin.default" xml:space="preserve"><value>Default</value></data>
+  <data name="Preset.builtin.dot" xml:space="preserve"><value>Dot</value></data>
+  <data name="Preset.builtin.cross" xml:space="preserve"><value>Cross</value></data>
+  <data name="Preset.builtin.t" xml:space="preserve"><value>T-shape</value></data>
+  <data name="Preset.builtin.x45" xml:space="preserve"><value>Diagonal X</value></data>
+  <data name="Preset.builtin.classic1px" xml:space="preserve"><value>Classic 1px</value></data>
+  <data name="Error.DataDirReadOnly" xml:space="preserve"><value>The data folder cannot be written. Changes are kept in memory only until you exit.</value></data>
+  <data name="Error.InvalidArguments" xml:space="preserve"><value>Invalid command line: {0}</value></data>
+  <data name="Error.StartupFailed" xml:space="preserve"><value>CrosshairManager could not start: {0}</value></data>
+  <data name="Error.Unhandled" xml:space="preserve"><value>An unexpected error occurred and was logged. CrosshairManager keeps running.
+
+{0}</value></data>
+  <data name="Error.AutoStartFailed" xml:space="preserve"><value>Start with Windows could not be changed.</value></data>
+  <data name="Settings.RecoveredFromCorrupt" xml:space="preserve"><value>settings.json was damaged. It was moved aside and default settings are used.</value></data>
+  <data name="Settings.NewerVersion" xml:space="preserve"><value>settings.json was saved by a newer version. Default settings are used and the file is left unchanged.</value></data>
+  <data name="Settings.LoadFailed" xml:space="preserve"><value>Settings could not be loaded. Default settings are used.</value></data>
+  <data name="Settings.Warning" xml:space="preserve"><value>A setting was invalid and was replaced.</value></data>
+  <data name="Presets.LoadFailed" xml:space="preserve"><value>The presets folder could not be read. Only built-in presets are available.</value></data>
+  <data name="Hotkey.RegistrationFailed" xml:space="preserve"><value>A hotkey could not be registered. It may be used by another program.</value></data>
+</root>
