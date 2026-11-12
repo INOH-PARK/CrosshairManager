@@ -43,6 +43,15 @@ public class NormalizeTests
     [InlineData("Top.Length", 0, 512)]
     [InlineData("Top.Thickness", 1, 64)]
     [InlineData("Top.Gap", -32, 256)]
+    [InlineData("Bottom.Length", 0, 512)]
+    [InlineData("Bottom.Thickness", 1, 64)]
+    [InlineData("Bottom.Gap", -32, 256)]
+    [InlineData("Left.Length", 0, 512)]
+    [InlineData("Left.Thickness", 1, 64)]
+    [InlineData("Left.Gap", -32, 256)]
+    [InlineData("Right.Length", 0, 512)]
+    [InlineData("Right.Thickness", 1, 64)]
+    [InlineData("Right.Gap", -32, 256)]
     [InlineData("Outline.Thickness", 1, 16)]
     [InlineData("Outline.Opacity", 0, 100)]
     public void Each_numeric_field_clamps_just_outside_both_bounds(string path, int min, int max)
@@ -66,6 +75,15 @@ public class NormalizeTests
     [InlineData("Top.Length", 0, 512)]
     [InlineData("Top.Thickness", 1, 64)]
     [InlineData("Top.Gap", -32, 256)]
+    [InlineData("Bottom.Length", 0, 512)]
+    [InlineData("Bottom.Thickness", 1, 64)]
+    [InlineData("Bottom.Gap", -32, 256)]
+    [InlineData("Left.Length", 0, 512)]
+    [InlineData("Left.Thickness", 1, 64)]
+    [InlineData("Left.Gap", -32, 256)]
+    [InlineData("Right.Length", 0, 512)]
+    [InlineData("Right.Thickness", 1, 64)]
+    [InlineData("Right.Gap", -32, 256)]
     [InlineData("Outline.Thickness", 1, 16)]
     [InlineData("Outline.Opacity", 0, 100)]
     public void Each_numeric_field_keeps_both_bounds_without_warning(string path, int min, int max)
@@ -175,6 +193,15 @@ public class NormalizeTests
         "Top.Length" => s with { Top = s.Top with { Length = value } },
         "Top.Thickness" => s with { Top = s.Top with { Thickness = value } },
         "Top.Gap" => s with { Top = s.Top with { Gap = value } },
+        "Bottom.Length" => s with { Bottom = s.Bottom with { Length = value } },
+        "Bottom.Thickness" => s with { Bottom = s.Bottom with { Thickness = value } },
+        "Bottom.Gap" => s with { Bottom = s.Bottom with { Gap = value } },
+        "Left.Length" => s with { Left = s.Left with { Length = value } },
+        "Left.Thickness" => s with { Left = s.Left with { Thickness = value } },
+        "Left.Gap" => s with { Left = s.Left with { Gap = value } },
+        "Right.Length" => s with { Right = s.Right with { Length = value } },
+        "Right.Thickness" => s with { Right = s.Right with { Thickness = value } },
+        "Right.Gap" => s with { Right = s.Right with { Gap = value } },
         "Outline.Thickness" => s with { Outline = s.Outline with { Thickness = value } },
         "Outline.Opacity" => s with { Outline = s.Outline with { Opacity = value } },
         _ => throw new ArgumentException($"Unknown field: {path}", nameof(path)),
