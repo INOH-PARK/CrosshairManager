@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "3f2b8c1e-5a7d-4e2f-9b1c-0d6e8a4f7c21",
+  "name": "Fixture v1",
+  "createdUtc": "2026-11-01T12:00:00Z",
+  "modifiedUtc": "2026-11-02T08:30:00Z",
+  "crosshair": {
+    "color": "#FF8800",
+    "opacity": 90,
+    "scalePercent": 150,
+    "rotationDeg": 90,
+    "offsetX": -3,
+    "offsetY": 5,
+    "dot": { "enabled": false, "size": 3, "opacity": 80 },
+    "top": { "enabled": false, "length": 8, "thickness": 2, "gap": 4 },
+    "bottom": { "enabled": true, "length": 8, "thickness": 2, "gap": 4 },
+    "left": { "enabled": true, "length": 10, "thickness": 1, "gap": -2 },
+    "right": { "enabled": true, "length": 10, "thickness": 1, "gap": -2 },
+    "outline": { "enabled": true, "thickness": 2, "color": "#101010", "opacity": 60 }
+  }
+}

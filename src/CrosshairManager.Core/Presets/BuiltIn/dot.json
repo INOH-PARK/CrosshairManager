@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "builtin.dot",
+  "name": "Preset.builtin.dot",
+  "createdUtc": "2026-01-01T00:00:00Z",
+  "modifiedUtc": "2026-01-01T00:00:00Z",
+  "crosshair": {
+    "dot": { "enabled": true, "size": 4, "opacity": 100 },
+    "top": { "enabled": false },
+    "bottom": { "enabled": false },
+    "left": { "enabled": false },
+    "right": { "enabled": false },
+    "outline": { "enabled": true, "thickness": 1 }
+  }
+}

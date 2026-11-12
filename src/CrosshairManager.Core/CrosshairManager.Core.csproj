@@ -2,4 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Presets\BuiltIn\*.json" LogicalName="CrosshairManager.Core.Presets.BuiltIn.%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>

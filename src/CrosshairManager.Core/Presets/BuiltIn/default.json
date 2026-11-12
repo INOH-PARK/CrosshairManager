@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "builtin.default",
+  "name": "Preset.builtin.default",
+  "createdUtc": "2026-01-01T00:00:00Z",
+  "modifiedUtc": "2026-01-01T00:00:00Z",
+  "crosshair": {}
+}
