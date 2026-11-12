@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "builtin.x45",
+  "name": "Preset.builtin.x45",
+  "createdUtc": "2026-01-01T00:00:00Z",
+  "modifiedUtc": "2026-01-01T00:00:00Z",
+  "crosshair": {
+    "rotationDeg": 45,
+    "dot": { "enabled": false },
+    "top": { "enabled": true, "length": 6, "thickness": 2, "gap": 3 },
+    "bottom": { "enabled": true, "length": 6, "thickness": 2, "gap": 3 },
+    "left": { "enabled": true, "length": 6, "thickness": 2, "gap": 3 },
+    "right": { "enabled": true, "length": 6, "thickness": 2, "gap": 3 }
+  }
+}

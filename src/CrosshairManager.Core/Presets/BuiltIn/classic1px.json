@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "builtin.classic1px",
+  "name": "Preset.builtin.classic1px",
+  "createdUtc": "2026-01-01T00:00:00Z",
+  "modifiedUtc": "2026-01-01T00:00:00Z",
+  "crosshair": {
+    "dot": { "enabled": false },
+    "top": { "enabled": true, "length": 4, "thickness": 1, "gap": 2 },
+    "bottom": { "enabled": true, "length": 4, "thickness": 1, "gap": 2 },
+    "left": { "enabled": true, "length": 4, "thickness": 1, "gap": 2 },
+    "right": { "enabled": true, "length": 4, "thickness": 1, "gap": 2 },
+    "outline": { "enabled": false }
+  }
+}
