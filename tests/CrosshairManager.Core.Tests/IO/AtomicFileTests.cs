@@ -50,4 +50,46 @@ public class AtomicFileTests : IDisposable
 
         Assert.ThrowsAny<IOException>(() => AtomicFile.WriteAllText(Path.Combine(blocker, "x.json"), "v"));
     }
+
+    [Fact]
+    public void Unwritable_folder_for_new_file_throws_IOException_wrapping_UnauthorizedAccess()
+    {
+        string folder = Path.Combine(_dir, "locked");
+        Directory.CreateDirectory(folder);
+        AssertUnwritableFolderThrowsIOException(folder, Path.Combine(folder, "new.json"));
+    }
+
+    [Fact]
+    public void Unwritable_folder_for_existing_file_throws_IOException_wrapping_UnauthorizedAccess()
+    {
+        string folder = Path.Combine(_dir, "locked");
+        Directory.CreateDirectory(folder);
+        string path = Path.Combine(folder, "preset.json");
+        File.WriteAllText(path, "v1");
+        AssertUnwritableFolderThrowsIOException(folder, path);
+    }
+
+    private static void AssertUnwritableFolderThrowsIOException(string folder, string path)
+    {
+        string user = Environment.UserName;
+        Icacls(folder, $"/deny \"{user}:(W,AD,WD,DC)\"");
+        try
+        {
+            var ex = Assert.ThrowsAny<IOException>(() => AtomicFile.WriteAllText(path, "v2"));
+            Assert.IsType<UnauthorizedAccessException>(ex.InnerException);
+        }
+        finally
+        {
+            Icacls(folder, $"/remove:d \"{user}\"");
+        }
+    }
+
+    private static void Icacls(string folder, string args)
+    {
+        using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("icacls", $"\"{folder}\" {args}") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true })!;
+        string stdout = p.StandardOutput.ReadToEnd();
+        string stderr = p.StandardError.ReadToEnd();
+        p.WaitForExit();
+        Assert.True(p.ExitCode == 0, $"icacls {args} failed: {stdout}{stderr}");
+    }
 }
