@@ -100,7 +100,7 @@ public class TopmostKeeperTests
         keeper.Reasserted += (_, _) => reasserted.TrySetResult();
 
         using var cover = new BackdropWindow(Canvas, Blue);
-        MakeTopmost(cover.Handle);
+        MakeTopmost(cover);
 
         await reasserted.Task.WaitAsync(ReassertTimeout);
         Assert.True(Eventually.True(() => IsAll(ScreenProbe.Capture(Canvas), Red), CaptureTimeout),
@@ -141,7 +141,7 @@ public class TopmostKeeperTests
         var ticks = TimerTicks(probeKeeper, 2);
 
         using var cover = new BackdropWindow(Canvas, Blue);
-        MakeTopmost(cover.Handle);
+        MakeTopmost(cover);
         await ticks.WaitAsync(EventTimeout);
 
         Assert.Equal(0, Volatile.Read(ref reasserts));
