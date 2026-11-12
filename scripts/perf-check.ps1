@@ -1,7 +1,11 @@
 # Idle performance check (todo 19). Windows PowerShell 5.1.
 # Starts the app against a temporary data folder with the settings window closed (disclaimerAccepted true),
 # waits for the "overlay shown" log gate (bounded), then measures CPU and working set over an idle window.
-# The Wait-Process timeout IS the measurement window (the app never exits on its own), not a sleep.
+# 'overlay shown' is logged in the middle of startup (before 'started'), so the remaining startup work (WPF/tray
+# init, JIT) is first spent in a bounded settle window that is measured and reported the same way, then the idle
+# window is measured. Without it the idle window was ~1.6-1.9% (all of it in the first second) while every later
+# window read 0.000%.
+# Each Wait-Process timeout IS a measurement window (the app never exits on its own), not a sleep.
 # Exit 0 when idle CPU% <= MaxCpuPercent, working set <= MaxWorkingSetMB, and the process exits on stop.
 # Exit 1 otherwise. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\perf-check.ps1
 [CmdletBinding()]
@@ -10,6 +14,7 @@ param(
     [double]$MaxCpuPercent = 0.5,
     [double]$MaxWorkingSetMB = 150,
     [int]$GateSeconds = 10,
+    [int]$SettleSeconds = 5,
     [int]$WindowSeconds = 10
 )
 
@@ -80,7 +85,14 @@ function Measure-Idle([string]$exe, [string]$dataDir) {
         if (-not $gate) { return }
 
         $p.Refresh()
+        $settle0 = $p.TotalProcessorTime
+        $settleWatch = [Diagnostics.Stopwatch]::StartNew()
+        # Startup settle window (bounded, measured): the process does not exit on its own.
+        [void](Wait-Process -Id $p.Id -Timeout $SettleSeconds -ErrorAction SilentlyContinue)
+        $settleWatch.Stop()
+        $p.Refresh()
         $cpu0 = $p.TotalProcessorTime
+        Say ('startup settle: CPU time {0:N3} s over {1:N2} s (not counted as idle)' -f ($cpu0 - $settle0).TotalSeconds, $settleWatch.Elapsed.TotalSeconds)
         $watch = [Diagnostics.Stopwatch]::StartNew()
         # Process does not exit on its own: this wait is the idle measurement window.
         [void](Wait-Process -Id $p.Id -Timeout $WindowSeconds -ErrorAction SilentlyContinue)
