@@ -2,10 +2,11 @@ using System.IO.Compression;
 using System.Text;
 using CrosshairManager.Core.Model;
 using CrosshairManager.Core.Presets;
+using Xunit.Abstractions;
 
 namespace CrosshairManager.Core.Tests.Presets;
 
-public class ShareCodeTests
+public class ShareCodeTests(ITestOutputHelper output)
 {
     [Fact]
     public void Built_in_presets_round_trip_through_encode_and_decode()
@@ -26,6 +27,7 @@ public class ShareCodeTests
     {
         var code = ShareCode.Encode("Default", CrosshairSpec.Default);
 
+        output.WriteLine($"default code: {code} (length {code.Length})");
         Assert.StartsWith("CHM1:", code);
         Assert.True(code.Length < 200, code);
     }
