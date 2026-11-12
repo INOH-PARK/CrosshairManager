@@ -86,7 +86,7 @@ public class OverlayEndToEndTests
         keeper.Reasserted += (_, _) => reasserted.TrySetResult();
 
         using var cover = new BackdropWindow(frame.Window, Blue);
-        MakeTopmost(cover.Handle);
+        MakeTopmost(cover);
         await reasserted.Task.WaitAsync(ReassertTimeout);
 
         // Margin stays magenta; inside the window the crosshair composites over the blue cover, not under it.
