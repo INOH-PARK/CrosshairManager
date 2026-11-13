@@ -484,5 +484,5 @@ $RECYCLE.BIN/
 # CrosshairManager
 artifacts/
 TestResults/
-.omo/evidence/
+.omo/
 !**/PublishProfiles/win-x64.pubxml
