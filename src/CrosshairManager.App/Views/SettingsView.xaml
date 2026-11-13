@@ -344,6 +344,7 @@
       <StackPanel Grid.Column="2" Margin="{StaticResource GapLeft2}">
         <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Preview.Header}" />
         <c:PreviewControl x:Name="Preview" x:FieldModifier="public"
+                          AutomationProperties.AutomationId="PreviewHost"
                           Spec="{Binding PreviewSpec}"
                           Zoom="8"
                           PreviewAutomationId="Preview"
