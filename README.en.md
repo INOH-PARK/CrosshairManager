@@ -50,6 +50,13 @@ Settings, presets and logs live in `%LocalAppData%\CrosshairManager`. Pass `--da
 CrosshairManager.exe --data-dir D:\CrosshairData
 ```
 
+### What it leaves on your system
+
+- Settings, presets and logs: only in the data folder above.
+- Only when "Start with Windows" is on, it adds a `CrosshairManager` value under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`. Turning it off removes that value.
+- There is no installer, and no other system settings are changed.
+
+
 ## Fullscreen games
 
 Exclusive fullscreen isn't supported. In that mode the game owns the display and normal windows can't show on top (https://github.com/lacymorrow/crossover/issues/64). Set the game to **borderless** windowed mode instead. Microsoft describes the Windows 11 windowed game optimizations at https://support.microsoft.com/en-us/windows/hardware/display-graphics/optimizations-for-windowed-games-in-windows-11 .
@@ -102,6 +109,27 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1
 git tag v1.2.3
 git push origin v1.2.3
 ```
+
+## Uninstall
+
+1. In the settings window, turn off "Start with Windows" on the Advanced tab (only if you turned it on).
+2. Choose Exit from the tray menu.
+3. Delete `CrosshairManager.exe`.
+4. To remove your settings too, delete `%LocalAppData%\CrosshairManager` (or the folder you passed with `--data-dir`).
+
+If you deleted the exe without step 1, remove the `CrosshairManager` value from `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+The application is pending, and releases published so far are unsigned. Once approved, only files built by this repository's GitHub Actions are signed, and an approver reviews every release before it is signed.
+
+- Committers and reviewers: [INOH-PARK](https://github.com/INOH-PARK)
+- Approvers: [INOH-PARK](https://github.com/INOH-PARK)
+
+Privacy policy: This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. It contains no networking code.
+
 
 ## License
 

@@ -54,6 +54,13 @@ Windows용 크로스헤어 오버레이입니다. 화면 위에 작은 투명 �
 CrosshairManager.exe --data-dir D:\CrosshairData
 ```
 
+### 시스템에 남기는 것
+
+- 설정, 프리셋, 로그: 위 데이터 폴더에만 씁니다.
+- "Windows 시작 시 실행"을 켠 경우에만 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`에 `CrosshairManager` 값을 추가합니다. 끄면 그 값을 지웁니다.
+- 설치 프로그램이 없고, 그 밖의 시스템 설정은 바꾸지 않습니다.
+
+
 ## 전체화면 게임
 
 Exclusive 전체화면(전용 전체화면)은 지원하지 않습니다. 이 모드에서는 게임이 화면을 독점해서 일반 창이 위에 보이지 않습니다(https://github.com/lacymorrow/crossover/issues/64). 게임 설정에서 **테두리 없는 창모드**를 고르세요. Windows 11의 창 모드 게임 최적화 설명은 https://support.microsoft.com/en-us/windows/hardware/display-graphics/optimizations-for-windowed-games-in-windows-11 에 있습니다.
@@ -106,6 +113,27 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1
 git tag v1.2.3
 git push origin v1.2.3
 ```
+
+## 제거 방법
+
+1. 설정 창 고급 탭에서 "Windows 시작 시 실행"을 끕니다(켠 적이 있을 때만).
+2. 트레이 메뉴에서 종료를 고릅니다.
+3. `CrosshairManager.exe` 파일을 지웁니다.
+4. 설정까지 지우려면 `%LocalAppData%\CrosshairManager` 폴더(또는 `--data-dir`로 지정한 폴더)를 지웁니다.
+
+1번을 하지 않고 exe를 지웠다면 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`에서 `CrosshairManager` 값을 지우세요.
+
+## 코드 서명 정책 (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+현재 서명 신청 중이며, 지금까지 배포한 릴리스는 서명되지 않았습니다. 승인 후에는 이 저장소의 GitHub Actions가 빌드한 파일만, 릴리스마다 승인자가 직접 확인한 뒤 서명합니다.
+
+- 커밋 작성자와 리뷰어: [INOH-PARK](https://github.com/INOH-PARK)
+- 서명 승인자: [INOH-PARK](https://github.com/INOH-PARK)
+
+개인정보: This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. 이 프로그램은 네트워크 통신 기능이 없고, 사용자 정보를 어디로도 보내지 않습니다.
+
 
 ## 라이선스
 
