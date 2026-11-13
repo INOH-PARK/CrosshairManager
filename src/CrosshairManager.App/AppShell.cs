@@ -87,6 +87,7 @@ public sealed class AppShell : IAppShell, IDisposable
         _overlay.Initialize(PresetCycle.Resolve(_presets, _settings.ActivePresetId).Crosshair, _settings.Monitor, visible);
 
         _hotkeys = new GlobalHotkeys();
+        _hotkeys.HandlerFailed += ex => _log.Error("hotkey handler failed", ex);
         _hotkeys.Pressed += id => _dispatcher.BeginInvoke(() => OnHotkey(id));
         foreach (var id in HotkeyBindings.Ids)
         {

@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using CrosshairManager.Core.Settings;
 using Windows.Win32;
@@ -48,6 +49,15 @@ public sealed unsafe class GlobalHotkeys : IDisposable
 
     /// <summary>Raised with the registered id when its hotkey is pressed (on the hotkey thread).</summary>
     public event Action<string>? Pressed;
+
+    /// <summary>
+    /// Raised on the hotkey thread with an exception a <see cref="Pressed"/> handler threw. The exception is caught there so it
+    /// cannot unwind through the window procedure; without a subscriber it is written to Trace.
+    /// </summary>
+    public event Action<Exception>? HandlerFailed;
+
+    /// <summary>The message-only window that owns the registrations (tests post WM_HOTKEY to it).</summary>
+    internal nint WindowHandle => (nint)_hwnd.Value;
 
     public bool TryRegister(string id, HotkeyGesture gesture, out int win32Error)
     {
@@ -129,12 +139,18 @@ public sealed unsafe class GlobalHotkeys : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed != 0, this);
         var result = false;
+        Exception? error = null;
         using var done = new ManualResetEventSlim();
         _work.Enqueue(() =>
         {
+            // Rethrown on the calling thread below instead of unwinding through the window procedure.
             try
             {
                 result = func();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
             }
             finally
             {
@@ -149,6 +165,11 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         if (!done.Wait(CallTimeout))
         {
             throw new TimeoutException("Hotkey thread did not respond.");
+        }
+
+        if (error is not null)
+        {
+            ExceptionDispatchInfo.Throw(error);
         }
 
         return result;
@@ -221,6 +242,13 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         }
     }
 
+    private bool ReportHandlerFailure(Exception ex)
+    {
+        var handler = HandlerFailed;
+        handler?.Invoke(ex);
+        return handler is not null;
+    }
+
     private LRESULT WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
     {
         if (msg == PInvoke.WM_APP)
@@ -237,7 +265,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         {
             if (_atomToId.TryGetValue((int)wParam.Value, out var id))
             {
-                Pressed?.Invoke(id);
+                CallbackGuard.Run(() => Pressed?.Invoke(id), ReportHandlerFailure, "hotkey Pressed");
             }
 
             return (LRESULT)0;

@@ -36,6 +36,7 @@ public sealed class OverlayController : IDisposable
         _log = log;
         _host = new OverlayHost();
         _keeper = new TopmostKeeper(_host);
+        _keeper.HandlerFailed += (_, ex) => _log.Error("topmost keeper handler failed", ex);
         _monitors.Changed += OnMonitorsChanged;
     }
 

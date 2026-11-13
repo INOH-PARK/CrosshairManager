@@ -19,7 +19,8 @@ public enum TopmostCheckSource
 /// thread timer. A check walks GW_HWNDPREV from the visible overlay and counts a window as "above" only if it is
 /// visible, not DWM-cloaked and its rectangle intersects the overlay's; only then SetWindowPos(HWND_TOPMOST,
 /// SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOSIZE) runs and <see cref="Reasserted"/> is raised. Events fire on the overlay
-/// thread. Dispose before the host.
+/// thread; a handler that throws is reported through <see cref="HandlerFailed"/> instead of unwinding into user32. Dispose
+/// before the host.
 /// </summary>
 public sealed unsafe class TopmostKeeper : IDisposable
 {
@@ -63,6 +64,12 @@ public sealed unsafe class TopmostKeeper : IDisposable
     /// <summary>Raised on the overlay thread after every check (timer tick or foreground change).</summary>
     public event EventHandler<TopmostCheckSource>? Checked;
 
+    /// <summary>
+    /// Raised on the overlay thread with an exception a <see cref="Reasserted"/> or <see cref="Checked"/> handler threw; it was
+    /// caught inside the hook/timer callback. Without a subscriber it is written to Trace.
+    /// </summary>
+    public event EventHandler<Exception>? HandlerFailed;
+
     /// <summary>Removes the hook and the timer on the overlay thread. Idempotent.</summary>
     public void Dispose()
     {
@@ -78,10 +85,18 @@ public sealed unsafe class TopmostKeeper : IDisposable
         });
     }
 
-    private void OnTimer(HWND hwnd, uint msg, nuint id, uint time) => Check(TopmostCheckSource.Timer);
+    private void OnTimer(HWND hwnd, uint msg, nuint id, uint time) =>
+        CallbackGuard.Run(() => Check(TopmostCheckSource.Timer), ReportHandlerFailure, "topmost timer");
 
     private void OnWinEvent(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int idChild, uint thread, uint time) =>
-        Check(TopmostCheckSource.Foreground);
+        CallbackGuard.Run(() => Check(TopmostCheckSource.Foreground), ReportHandlerFailure, "topmost foreground hook");
+
+    private bool ReportHandlerFailure(Exception ex)
+    {
+        var handler = HandlerFailed;
+        handler?.Invoke(this, ex);
+        return handler is not null;
+    }
 
     private void Check(TopmostCheckSource source)
     {
