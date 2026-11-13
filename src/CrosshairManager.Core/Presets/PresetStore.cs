@@ -85,10 +85,13 @@ public sealed class PresetStore(string dataDir, TimeProvider? time = null)
         return Write(preset with { Id = keepId ? guid.ToString("D") : NewId() });
     }
 
-    public void ExportFile(string id, string path)
+    /// <summary>Writes the preset to <paramref name="path"/>; <paramref name="name"/> replaces the stored name in the file only
+    /// (built-ins store a resx key and are exported under their localized name).</summary>
+    public void ExportFile(string id, string path, string? name = null)
     {
         ArgumentNullException.ThrowIfNull(path);
-        AtomicFile.WriteAllText(path, PresetFile.Serialize(Get(id)));
+        var preset = Get(id);
+        AtomicFile.WriteAllText(path, PresetFile.Serialize(name is null ? preset : preset with { Name = name }));
     }
 
     private Preset Get(string id)
