@@ -9,14 +9,20 @@ A crosshair overlay for Windows. It draws your crosshair in a small transparent 
 - Click-through, always-on-top crosshair overlay. The window is only as big as the crosshair and redraws only when a setting changes.
 - Line length, thickness, gap, outline, center dot, color, opacity, rotation (45 degree steps) and scale
 - Built-in and user presets, with import/export as JSON files or clipboard share codes
-- Live preview and auto-save in the settings window
+- Settings window with Simple and Advanced tabs, live preview and auto-save
 - Multi-monitor selection with per-monitor DPI
-- Tray icon menu, global hotkeys, single instance
-- Korean and English UI (follows the Windows display language by default, switchable in settings)
+- Tray icon menu, global hotkeys, single instance, optional start with Windows
+- Korean and English UI (follows the system language by default; pick System language, 한국어 or English in settings)
 
 ## Screenshots
 
-The settings window is still being built, so screenshots will be added later.
+Simple tab:
+
+![Settings window, Simple tab](docs/images/settings-simple.png)
+
+Advanced tab with the language picker:
+
+![Settings window, Advanced tab in English](docs/images/settings-en.png)
 
 ## Usage
 

@@ -26,7 +26,7 @@
 - **TFM**: Windows 프로젝트(Platform, Cli, TestSupport, Desktop.Tests, Ui.Tests, SendHotkey)는 `net10.0-windows10.0.19041.0`을 쓴다. 계획의 `net10.0-windows`(플랫폼 버전 7.0)로는 CsWin32가 만든 `SetProcessDpiAwarenessContext` 등이 CA1416(오류로 취급)을 내고, `SupportedOSPlatformVersion`은 TargetPlatformVersion보다 높을 수 없어(NETSDK1135) 해결되지 않는다. Core, TestSupport.Core, Core.Tests는 `net10.0`이다.
 - **AllowUnsafeBlocks**: CsWin32를 쓰는 세 프로젝트(Platform, TestSupport, SendHotkey)의 csproj에 `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>`를 둔다.
 - **창 스타일 API**: `GetWindowLongPtr/SetWindowLongPtr` 대신 `GetWindowLong/SetWindowLong`을 NativeMethods.txt에 적는다(GWL_EXSTYLE만 사용). PlatformTarget 변경은 하지 않는다(AnyCPU 유지).
-- **DPI 컨텍스트**: PER_MONITOR_AWARE_V2는 `new DPI_AWARENESS_CONTEXT((nint)(-4))`로 만든다(`tests/CrosshairManager.TestSupport/DpiAwareness.cs`).
+- **DPI 컨텍스트**: PER_MONITOR_AWARE_V2는 `new DPI_AWARENESS_CONTEXT((nint)(-4))`로 만든다. 앱은 `src/CrosshairManager.Platform/Dpi/DpiAwareness.cs`를 쓰고, 테스트용 사본은 `tests/CrosshairManager.TestSupport/DpiAwareness.cs`에 있다.
 - **트레이**: H.NotifyIcon.Wpf 2.4.1이 복원되고, `TaskbarIcon`이 있는 WPF 앱이 `dotnet publish src/CrosshairManager.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true`로 빌드와 단일 파일 게시까지 성공했다(exit 0, 단일 exe 157,814,590 바이트). 따라서 H.NotifyIcon.Wpf를 그대로 쓰고 `Shell_NotifyIcon` 대체 구현은 필요 없다.
 - **테스트 0개 규칙**: `scripts/verify.ps1`은 테스트 메서드(`[Fact]`/`[Theory]`)가 아직 없는 프로젝트가 trx를 만들지 않는 것을 허용한다(뼈대 단계). 테스트 메서드가 하나라도 있으면 trx 누락은 실패다.
 - **Ui.Tests**는 App 프로젝트를 참조하지 않는다(TFM 불일치). 실행 파일 경로로 앱을 띄우며, 빌드는 솔루션 빌드가 보장한다.
