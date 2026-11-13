@@ -259,4 +259,19 @@ public sealed class CliTests : IDisposable
         Assert.NotEmpty(err);
         Assert.False(File.Exists(P("settings.json")), "verify-overlay must not create settings.json");
     }
+
+    [Fact]
+    public void VerifyOverlay_CorruptSettings_AreReadAsDefaults_AndLeftUntouched()
+    {
+        byte[] corrupt = [0x7B, 0x22, 0xFF, 0x00, 0x7B];
+        File.WriteAllBytes(P("settings.json"), corrupt);
+
+        // The unknown preset stops the command with exit 2 after settings were loaded and before any window exists.
+        var (code, _, err) = Run("verify-overlay", "--data-dir", _dir, "--preset", "no-such-preset");
+
+        Assert.Equal(2, code);
+        Assert.Contains("no-such-preset", err, StringComparison.Ordinal);
+        Assert.Equal(corrupt, File.ReadAllBytes(P("settings.json")));
+        Assert.Equal([P("settings.json")], Directory.GetFiles(_dir));
+    }
 }

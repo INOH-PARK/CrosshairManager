@@ -44,6 +44,36 @@ public class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Read_of_a_corrupt_file_returns_defaults_and_leaves_the_folder_untouched()
+    {
+        Directory.CreateDirectory(_dir);
+        byte[] original = [0x7B, 0x22, 0xFF, 0x00, 0x7B];
+        File.WriteAllBytes(FilePath, original);
+
+        var settings = new SettingsStore(_dir).Read();
+
+        Assert.Equal(AppSettings.Default, settings);
+        Assert.Equal(original, File.ReadAllBytes(FilePath));
+        Assert.Equal([FilePath], Directory.GetFiles(_dir));
+    }
+
+    [Fact]
+    public void Read_of_a_missing_file_returns_defaults_and_creates_nothing()
+    {
+        Assert.Equal(AppSettings.Default, new SettingsStore(_dir).Read());
+        Assert.False(Directory.Exists(_dir));
+    }
+
+    [Fact]
+    public void Read_returns_the_stored_settings()
+    {
+        var stored = AppSettings.Default with { ActivePresetId = "mine", OverlayVisible = false };
+        new SettingsStore(_dir).Save(stored);
+
+        Assert.Equal(stored, new SettingsStore(_dir).Read());
+    }
+
+    [Fact]
     public void Newer_schema_version_uses_defaults_and_leaves_the_file_byte_for_byte()
     {
         Directory.CreateDirectory(_dir);

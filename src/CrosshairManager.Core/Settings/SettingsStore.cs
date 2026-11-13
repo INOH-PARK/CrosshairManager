@@ -7,7 +7,10 @@ namespace CrosshairManager.Core.Settings;
 
 public sealed record SettingsLoadResult(AppSettings Settings, SettingsLoadStatus Status, IReadOnlyList<string> Warnings);
 
-/// <summary><c>{dataDir}/settings.json</c>. Corrupt files are moved aside; newer-version files are never rewritten.</summary>
+/// <summary>
+/// <c>{dataDir}/settings.json</c>. <see cref="Load"/> moves corrupt files aside and creates a missing file; newer-version files are
+/// never rewritten. <see cref="Read"/> never touches the disk.
+/// </summary>
 public sealed class SettingsStore(string dataDir, TimeProvider? time = null)
 {
     private const int CurrentVersion = 1;
@@ -31,15 +34,12 @@ public sealed class SettingsStore(string dataDir, TimeProvider? time = null)
         AppSettings settings;
         try
         {
-            using var stream = File.OpenRead(FilePath);
-            var root = JsonNode.Parse(stream) as JsonObject ?? throw new FormatException("settings.json must hold a JSON object.");
-            int version = root["schemaVersion"]?.GetValue<int>() ?? 1;
-            if (version > CurrentVersion)
+            if (Parse(warnings, out int version) is not { } parsed)
             {
                 return new SettingsLoadResult(AppSettings.Default, new SettingsLoadStatus.NewerVersion(version), []);
             }
 
-            settings = Map(root, warnings);
+            settings = parsed;
         }
         catch (Exception ex) when (ex is JsonException or FormatException or InvalidOperationException)
         {
@@ -51,12 +51,42 @@ public sealed class SettingsStore(string dataDir, TimeProvider? time = null)
         return new SettingsLoadResult(settings, new SettingsLoadStatus.Ok(), warnings);
     }
 
+    /// <summary>
+    /// Side-effect-free read for verifiers: a missing, corrupt or newer-version file yields <see cref="AppSettings.Default"/> and
+    /// nothing is created, renamed or rewritten.
+    /// </summary>
+    public AppSettings Read()
+    {
+        if (!File.Exists(FilePath))
+        {
+            return AppSettings.Default;
+        }
+
+        try
+        {
+            return Parse([], out _) ?? AppSettings.Default;
+        }
+        catch (Exception ex) when (ex is JsonException or FormatException or InvalidOperationException)
+        {
+            return AppSettings.Default;
+        }
+    }
+
     /// <exception cref="IOException">The data folder or file cannot be written.</exception>
     public void Save(AppSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
         Directory.CreateDirectory(_dir);
         AtomicFile.WriteAllText(FilePath, ToJson(settings).ToJsonString(WriteOptions));
+    }
+
+    /// <summary>Null when the file has a newer schema version (<paramref name="version"/>).</summary>
+    private AppSettings? Parse(List<string> warnings, out int version)
+    {
+        using var stream = File.OpenRead(FilePath);
+        var root = JsonNode.Parse(stream) as JsonObject ?? throw new FormatException("settings.json must hold a JSON object.");
+        version = root["schemaVersion"]?.GetValue<int>() ?? 1;
+        return version > CurrentVersion ? null : Map(root, warnings);
     }
 
     private static AppSettings Map(JsonObject root, List<string> warnings)
