@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CrosshairManager.App;
+using CrosshairManager.App.Localization;
 using CrosshairManager.App.ViewModels;
 using CrosshairManager.App.Views;
 using CrosshairManager.Desktop.Tests.EndToEnd;
@@ -43,6 +45,11 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
     [
         "Swatch0", "Swatch1", "Swatch2", "Swatch3", "Swatch4", "Swatch5", "Swatch6", "Swatch7", "SimpleScale", "SimpleOpacity", "SimpleOutline",
     ];
+
+    /// <summary>A detail line longer than the InfoBar is wide (an IOException message with a full path).</summary>
+    private const string LongDetail =
+        @"The process cannot access the file 'C:\Users\someone\AppData\Local\CrosshairManager\settings.json' because it is being used by another process. " +
+        "Close the other program that has the file open, then open the settings window again to retry loading it.";
 
     [Fact]
     public void BothTabs_ShowEveryAlwaysVisibleId_InsideTheView_WithoutOverlappingLeafSiblings()
@@ -162,6 +169,73 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
         Assert.Equal(20, bitmapWidth);
     }
 
+    /// <summary>
+    /// The InfoBar shows the whole of its text at the minimum window size in both languages, with the notice alone and with
+    /// a message plus a long detail: every TextBlock inside it gets at least the height its whole text needs at the width it
+    /// was arranged with (a trimmed line would need a second line; a clipped block would need more height than it has).
+    /// Renders TestResults/desktop/settings-view/infobar-{language}-{notice,message}.png.
+    /// </summary>
+    [Theory]
+    [InlineData("ko")]
+    [InlineData("en")]
+    public void InfoBar_ShowsItsWholeText_AtTheMinimumWindowSize(string language)
+    {
+        var problems = WpfThread.Run(() =>
+        {
+            WpfThread.EnsureApplication();
+            var previous = Loc.Instance.Culture.Name;
+            Loc.Instance.SetLanguage(language);
+            try
+            {
+                using var dir = new AppTestDir();
+                var shell = new FakeAppShell(dir.Path);
+                using var vm = new SettingsViewModel(shell, new FakeDialogs(), new FakeMonitors(), new ManualDebounce());
+                var view = new SettingsView { DataContext = vm };
+                var outDir = Path.Combine(EndToEndHarness.RepositoryRoot(), "TestResults", "desktop", "settings-view");
+                Directory.CreateDirectory(outDir);
+                var problems = new List<string>();
+                foreach (var (state, pending, expectedIds) in new[]
+                         {
+                             ("notice", (PendingMessage?)null, new[] { "InfoBarNotice" }),
+                             ("message", new PendingMessage("Settings.LoadFailed", LongDetail), new[] { "InfoBarNotice", "InfoBarMessage", "InfoBarDetail" }),
+                         })
+                {
+                    if (pending is not null)
+                    {
+                        shell.Pending.Add(pending);
+                        shell.Raise();
+                    }
+
+                    Layout(view);
+                    var bar = Descendants(view).Single(e => AutomationProperties.GetAutomationId(e) == "InfoBar");
+                    var blocks = Descendants(bar).OfType<TextBlock>().Where(b => IsShown(b, view)).ToList();
+                    problems.AddRange(expectedIds.Except(blocks.Select(AutomationProperties.GetAutomationId)).Select(id => $"[{language}/{state}] {id} is not shown"));
+                    foreach (var block in blocks)
+                    {
+                        var needed = HeightOfWholeText(block);
+                        output.WriteLine($"[{language}/{state}] {Describe(block)}: {block.ActualWidth:0.#}x{block.ActualHeight:0.#}, whole text needs {needed:0.#} px, one line would be {WidthOfOneLine(block):0.#} px wide");
+                        if (needed > block.ActualHeight + 0.5)
+                        {
+                            problems.Add($"[{language}/{state}] {Describe(block)} is {block.ActualHeight:0.#} px tall but its whole text needs {needed:0.#} px at {block.ActualWidth:0.#} px wide: '{block.Text}'");
+                        }
+                    }
+
+                    var png = Path.Combine(outDir, $"infobar-{language}-{state}.png");
+                    Save(view, png);
+                    output.WriteLine("rendered " + png);
+                }
+
+                return problems;
+            }
+            finally
+            {
+                Loc.Instance.SetLanguage(previous);
+            }
+        });
+
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
     private static void Layout(UIElement view)
     {
         view.Measure(new Size(ClientWidth, ClientHeight));
@@ -236,6 +310,40 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
             }
         }
     }
+
+    /// <summary>Height the block needs to show all of its text at its arranged width: a probe with the same text properties, wrapped and untrimmed, measured with unlimited height.</summary>
+    private static double HeightOfWholeText(TextBlock block)
+    {
+        var probe = Probe(block, TextWrapping.Wrap);
+        probe.Measure(new Size(block.ActualWidth, double.PositiveInfinity));
+        return probe.DesiredSize.Height;
+    }
+
+    /// <summary>Width the block's text takes on a single unwrapped line (how far a translation is from fitting).</summary>
+    private static double WidthOfOneLine(TextBlock block)
+    {
+        var probe = Probe(block, TextWrapping.NoWrap);
+        probe.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        return probe.DesiredSize.Width;
+    }
+
+    private static TextBlock Probe(TextBlock block, TextWrapping wrapping) =>
+        new()
+        {
+            Text = block.Text,
+            FontFamily = block.FontFamily,
+            FontSize = block.FontSize,
+            FontStyle = block.FontStyle,
+            FontWeight = block.FontWeight,
+            FontStretch = block.FontStretch,
+            Padding = block.Padding,
+            LineHeight = block.LineHeight,
+            LineStackingStrategy = block.LineStackingStrategy,
+            FlowDirection = block.FlowDirection,
+            UseLayoutRounding = block.UseLayoutRounding,
+            TextWrapping = wrapping,
+            TextTrimming = TextTrimming.None,
+        };
 
     private static Rect Shrink(Rect r) => r.Width > 2 && r.Height > 2 ? new Rect(r.X + 1, r.Y + 1, r.Width - 2, r.Height - 2) : Rect.Empty;
 
