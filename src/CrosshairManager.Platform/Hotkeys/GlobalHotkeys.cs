@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using CrosshairManager.Core.Settings;
 using Windows.Win32;
@@ -99,9 +100,28 @@ public sealed unsafe class GlobalHotkeys : IDisposable
             return;
         }
 
-        _work.Enqueue(() => PInvoke.DestroyWindow(_hwnd));
-        PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0);
-        _thread.Join(CallTimeout);
+        // Hotkeys belong to _hwnd: release them on its own thread before the window goes away.
+        _work.Enqueue(() =>
+        {
+            foreach (var atom in _atomToId.Keys)
+            {
+                PInvoke.UnregisterHotKey(_hwnd, atom);
+            }
+
+            _atomToId.Clear();
+            _idToAtom.Clear();
+            PInvoke.DestroyWindow(_hwnd);
+        });
+        if (!PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0))
+        {
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "PostMessage to the hotkey window failed; hotkeys were not released.");
+        }
+
+        if (!_thread.Join(CallTimeout))
+        {
+            throw new TimeoutException("Hotkey thread did not exit within 5 seconds.");
+        }
+
         _ready.Dispose();
     }
 
@@ -123,7 +143,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         });
         if (!PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0))
         {
-            throw new InvalidOperationException("PostMessage to hotkey window failed.");
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "PostMessage to the hotkey window failed.");
         }
 
         if (!done.Wait(CallTimeout))
@@ -151,7 +171,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
                 };
                 if (PInvoke.RegisterClassEx(wc) == 0)
                 {
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
                 registered = true;
@@ -163,7 +183,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
 
                 if (_hwnd.IsNull)
                 {
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
             }
         }
@@ -184,11 +204,6 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         {
             PInvoke.TranslateMessage(msg);
             PInvoke.DispatchMessage(msg);
-        }
-
-        foreach (var atom in _atomToId.Keys)
-        {
-            PInvoke.UnregisterHotKey(HWND.Null, atom);
         }
 
         UnregisterClassName();
