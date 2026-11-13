@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 artifacts/
 TestResults/
 .omo/evidence/
+!**/PublishProfiles/win-x64.pubxml
