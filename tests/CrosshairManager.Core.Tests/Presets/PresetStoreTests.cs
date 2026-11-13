@@ -277,6 +277,20 @@ public class PresetStoreTests : IDisposable
     }
 
     [Fact]
+    public void Export_with_a_name_override_writes_that_name_and_leaves_the_store_unchanged()
+    {
+        var store = NewStore();
+        string exported = Path.Combine(_root, "named.json");
+
+        store.ExportFile("builtin.cross", exported, "Cross");
+
+        var ok = Assert.IsType<PresetLoadResult.Ok>(PresetFile.Load(File.ReadAllText(exported)));
+        Assert.Equal("Cross", ok.Preset.Name);
+        Assert.Equal(BuiltInPresets.All.Single(p => p.Id == "builtin.cross").Crosshair, ok.Preset.Crosshair);
+        Assert.Empty(UserIds(store));
+    }
+
+    [Fact]
     public void Importing_a_conflicting_id_gets_a_new_guid()
     {
         var store = NewStore();

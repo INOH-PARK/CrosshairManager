@@ -224,7 +224,8 @@ public sealed partial class PresetListViewModel : ObservableObject
         }
 
         _beforeChange();
-        Run(() => _shell.PresetStore.ExportFile(source.Id, path), "Error.PresetExportFailed");
+        // Built-in names are resx keys: export the localized name (as CopyShareCode does).
+        Run(() => _shell.PresetStore.ExportFile(source.Id, path, source.IsBuiltIn ? source.DisplayName : null), "Error.PresetExportFailed");
     }
 
     [RelayCommand(CanExecute = nameof(IsSelectedUsable))]

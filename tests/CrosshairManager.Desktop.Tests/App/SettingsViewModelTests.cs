@@ -258,6 +258,20 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
+    public void ExportingABuiltIn_WritesTheLocalizedName_SoTheImportIsNotNamedAfterAResxKey()
+    {
+        Assert.Equal("builtin.default", _shell.Settings.ActivePresetId);
+        _dialogs.ExportPath = _dir.Combine("builtin.json");
+        _vm.Presets.ExportPresetFileCommand.Execute(null);
+        var localized = Loc.Instance["Preset.builtin.default"];
+        Assert.Equal(localized, JsonNode.Parse(File.ReadAllText(_dialogs.ExportPath))!["name"]!.GetValue<string>());
+
+        _dialogs.ImportPath = _dialogs.ExportPath;
+        _vm.Presets.ImportPresetFileCommand.Execute(null);
+        Assert.Equal(localized, PresetJson(_shell.Settings.ActivePresetId)["name"]!.GetValue<string>());
+    }
+
+    [Fact]
     public void HotkeyRebindFailure_ShowsHotkeyError_AndSuccessClearsIt()
     {
         _shell.FailingGestures.Add("Ctrl+Alt+Shift+F9");

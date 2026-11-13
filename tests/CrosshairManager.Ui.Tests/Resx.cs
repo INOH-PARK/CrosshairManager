@@ -8,6 +8,12 @@ internal static class Resx
 {
     public static string English(string key) => Value(Path.Combine(AppFixture.RepositoryRoot, "src", "CrosshairManager.App", "Resources", "Strings.resx"), key);
 
+    /// <summary>The value the app shows for language "system" (Loc.Resolve: Korean when the OS UI language is ko, else English).</summary>
+    public static string SystemLanguage(string key) =>
+        System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ko"
+            ? Value(Path.Combine(AppFixture.RepositoryRoot, "src", "CrosshairManager.App", "Resources", "Strings.ko.resx"), key)
+            : English(key);
+
     public static string Value(string resxPath, string key)
     {
         var data = XDocument.Load(resxPath).Root!
