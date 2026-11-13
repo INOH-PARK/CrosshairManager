@@ -21,10 +21,111 @@
 
 {0}</value></data>
   <data name="Error.AutoStartFailed" xml:space="preserve"><value>Start with Windows could not be changed.</value></data>
-  <data name="Settings.RecoveredFromCorrupt" xml:space="preserve"><value>settings.json was damaged. It was moved aside and default settings are used.</value></data>
+  <data name="InfoBar.SettingsRecovered" xml:space="preserve"><value>settings.json was damaged. It was moved aside and default settings are used.</value></data>
   <data name="Settings.NewerVersion" xml:space="preserve"><value>settings.json was saved by a newer version. Default settings are used and the file is left unchanged.</value></data>
   <data name="Settings.LoadFailed" xml:space="preserve"><value>Settings could not be loaded. Default settings are used.</value></data>
   <data name="Settings.Warning" xml:space="preserve"><value>A setting was invalid and was replaced.</value></data>
   <data name="Presets.LoadFailed" xml:space="preserve"><value>The presets folder could not be read. Only built-in presets are available.</value></data>
   <data name="Hotkey.RegistrationFailed" xml:space="preserve"><value>A hotkey could not be registered. It may be used by another program.</value></data>
+  <data name="Window.Title" xml:space="preserve"><value>CrosshairManager</value></data>
+  <data name="Tab.Simple" xml:space="preserve"><value>Simple</value></data>
+  <data name="Tab.Advanced" xml:space="preserve"><value>Advanced</value></data>
+  <data name="Presets.Header" xml:space="preserve"><value>Presets</value></data>
+  <data name="Preset.New" xml:space="preserve"><value>New</value></data>
+  <data name="Preset.Duplicate" xml:space="preserve"><value>Duplicate</value></data>
+  <data name="Preset.Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Preset.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Preset.Import" xml:space="preserve"><value>Import...</value></data>
+  <data name="Preset.Export" xml:space="preserve"><value>Export...</value></data>
+  <data name="Preset.NewName" xml:space="preserve"><value>New preset</value></data>
+  <data name="Preset.CopyName" xml:space="preserve"><value>{0} (copy)</value></data>
+  <data name="Preset.ImportedName" xml:space="preserve"><value>Imported preset</value></data>
+  <data name="Preset.Status.BuiltIn" xml:space="preserve"><value>Built-in</value></data>
+  <data name="Preset.Status.Broken" xml:space="preserve"><value>Broken file</value></data>
+  <data name="Preset.Status.NewerVersion" xml:space="preserve"><value>Newer version</value></data>
+  <data name="Preset.RenameTitle" xml:space="preserve"><value>Rename preset</value></data>
+  <data name="Preset.RenamePrompt" xml:space="preserve"><value>New name:</value></data>
+  <data name="Preset.DeleteTitle" xml:space="preserve"><value>Delete preset</value></data>
+  <data name="Preset.DeletePrompt" xml:space="preserve"><value>Delete "{0}"? This cannot be undone.</value></data>
+  <data name="Preset.FileFilter" xml:space="preserve"><value>Preset files (*.json)|*.json</value></data>
+  <data name="ShareCode.Copy" xml:space="preserve"><value>Copy share code</value></data>
+  <data name="ShareCode.Paste" xml:space="preserve"><value>Paste</value></data>
+  <data name="ShareCode.Placeholder" xml:space="preserve"><value>Paste a CHM1: share code here</value></data>
+  <data name="ShareCode.Error.Prefix" xml:space="preserve"><value>The share code must start with CHM1:.</value></data>
+  <data name="ShareCode.Error.Base64" xml:space="preserve"><value>The share code contains invalid characters.</value></data>
+  <data name="ShareCode.Error.Inflate" xml:space="preserve"><value>The share code is damaged and cannot be decompressed.</value></data>
+  <data name="ShareCode.Error.Json" xml:space="preserve"><value>The share code does not contain a valid crosshair.</value></data>
+  <data name="ShareCode.Error.TooLarge" xml:space="preserve"><value>The share code is too large.</value></data>
+  <data name="Simple.BuiltIns" xml:space="preserve"><value>Built-in crosshairs</value></data>
+  <data name="Simple.Swatches" xml:space="preserve"><value>Color</value></data>
+  <data name="Simple.Scale" xml:space="preserve"><value>Size</value></data>
+  <data name="Simple.Opacity" xml:space="preserve"><value>Opacity</value></data>
+  <data name="Simple.Outline" xml:space="preserve"><value>Outline</value></data>
+  <data name="Group.Color" xml:space="preserve"><value>Color</value></data>
+  <data name="Group.Dot" xml:space="preserve"><value>Center dot</value></data>
+  <data name="Group.Lines" xml:space="preserve"><value>Lines</value></data>
+  <data name="Group.Outline" xml:space="preserve"><value>Outline</value></data>
+  <data name="Group.Transform" xml:space="preserve"><value>Transform</value></data>
+  <data name="Group.Display" xml:space="preserve"><value>Display</value></data>
+  <data name="Group.Hotkeys" xml:space="preserve"><value>Hotkeys</value></data>
+  <data name="Group.General" xml:space="preserve"><value>General</value></data>
+  <data name="Color.Hex" xml:space="preserve"><value>Hex</value></data>
+  <data name="Color.R" xml:space="preserve"><value>R</value></data>
+  <data name="Color.G" xml:space="preserve"><value>G</value></data>
+  <data name="Color.B" xml:space="preserve"><value>B</value></data>
+  <data name="Color.Invalid" xml:space="preserve"><value>Enter a color as #RRGGBB.</value></data>
+  <data name="Dot.Enabled" xml:space="preserve"><value>Show dot</value></data>
+  <data name="Dot.Size" xml:space="preserve"><value>Size</value></data>
+  <data name="Dot.Opacity" xml:space="preserve"><value>Opacity</value></data>
+  <data name="Lines.Link" xml:space="preserve"><value>Link lines</value></data>
+  <data name="Lines.TStyle" xml:space="preserve"><value>T-style (no top line)</value></data>
+  <data name="Line.Top" xml:space="preserve"><value>Top</value></data>
+  <data name="Line.Bottom" xml:space="preserve"><value>Bottom</value></data>
+  <data name="Line.Left" xml:space="preserve"><value>Left</value></data>
+  <data name="Line.Right" xml:space="preserve"><value>Right</value></data>
+  <data name="Line.Length" xml:space="preserve"><value>Length</value></data>
+  <data name="Line.Thickness" xml:space="preserve"><value>Thickness</value></data>
+  <data name="Line.Gap" xml:space="preserve"><value>Gap</value></data>
+  <data name="Outline.Enabled" xml:space="preserve"><value>Show outline</value></data>
+  <data name="Outline.Thickness" xml:space="preserve"><value>Thickness</value></data>
+  <data name="Outline.Color" xml:space="preserve"><value>Color</value></data>
+  <data name="Outline.Opacity" xml:space="preserve"><value>Opacity</value></data>
+  <data name="Transform.Opacity" xml:space="preserve"><value>Opacity</value></data>
+  <data name="Transform.Scale" xml:space="preserve"><value>Scale %</value></data>
+  <data name="Transform.Rotation" xml:space="preserve"><value>Rotation</value></data>
+  <data name="Transform.OffsetX" xml:space="preserve"><value>Offset X</value></data>
+  <data name="Transform.OffsetY" xml:space="preserve"><value>Offset Y</value></data>
+  <data name="Monitor.Label" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Monitor.Primary" xml:space="preserve"><value>Primary monitor</value></data>
+  <data name="Monitor.Device" xml:space="preserve"><value>{0} ({1}x{2})</value></data>
+  <data name="Monitor.NotConnected" xml:space="preserve"><value>{0} (not connected)</value></data>
+  <data name="Monitor.Warning" xml:space="preserve"><value>The selected monitor is not connected. The primary monitor is used until it returns.</value></data>
+  <data name="Hotkey.Toggle" xml:space="preserve"><value>Show/hide crosshair</value></data>
+  <data name="Hotkey.Next" xml:space="preserve"><value>Next preset</value></data>
+  <data name="Hotkey.Prev" xml:space="preserve"><value>Previous preset</value></data>
+  <data name="Hotkey.OpenSettings" xml:space="preserve"><value>Open settings</value></data>
+  <data name="Hotkey.None" xml:space="preserve"><value>Not set</value></data>
+  <data name="Hotkey.Error" xml:space="preserve"><value>This hotkey could not be registered. It may be used by another program; the previous hotkey stays active.</value></data>
+  <data name="Hotkey.Hint" xml:space="preserve"><value>Click a box and press a key combination. Backspace clears it.</value></data>
+  <data name="Language.Label" xml:space="preserve"><value>Language</value></data>
+  <data name="Language.System" xml:space="preserve"><value>System language</value></data>
+  <data name="Language.Korean" xml:space="preserve"><value>한국어</value></data>
+  <data name="Language.English" xml:space="preserve"><value>English</value></data>
+  <data name="StartWithWindows" xml:space="preserve"><value>Start with Windows</value></data>
+  <data name="OverlayVisible" xml:space="preserve"><value>Show crosshair</value></data>
+  <data name="Preview.Header" xml:space="preserve"><value>Preview</value></data>
+  <data name="InfoBar.Fullscreen" xml:space="preserve"><value>Exclusive fullscreen is not supported: use borderless windowed mode. Some games forbid overlays (anti-cheat / terms of service); you use this at your own risk.</value></data>
+  <data name="InfoBar.Dismiss" xml:space="preserve"><value>Dismiss</value></data>
+  <data name="Disclaimer.Title" xml:space="preserve"><value>Before you start</value></data>
+  <data name="Disclaimer.Fullscreen" xml:space="preserve"><value>Exclusive fullscreen is not supported. Run your game in borderless windowed mode or windowed mode.</value></data>
+  <data name="Disclaimer.AntiCheat" xml:space="preserve"><value>Some games forbid overlays in their terms of service or anti-cheat rules. You are responsible for checking each game's rules. CrosshairManager never injects code, hooks, reads memory or reads the screen of any game.</value></data>
+  <data name="Disclaimer.Hotkeys" xml:space="preserve"><value>Games that block system hotkeys may stop the global hotkeys from working. The tray icon keeps working.</value></data>
+  <data name="Disclaimer.Ok" xml:space="preserve"><value>I understand</value></data>
+  <data name="Dialog.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Dialog.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Editor.Clamped" xml:space="preserve"><value>Out-of-range values are clamped when saved: {0}</value></data>
+  <data name="Error.PresetSaveFailed" xml:space="preserve"><value>The preset could not be saved: {0}</value></data>
+  <data name="Error.PresetImportFailed" xml:space="preserve"><value>The file could not be imported: {0}</value></data>
+  <data name="Error.PresetExportFailed" xml:space="preserve"><value>The file could not be exported: {0}</value></data>
+  <data name="Error.PresetOperationFailed" xml:space="preserve"><value>The preset operation failed: {0}</value></data>
 </root>

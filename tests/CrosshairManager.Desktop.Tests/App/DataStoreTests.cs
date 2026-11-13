@@ -20,7 +20,7 @@ public class DataStoreTests
         Assert.True(store.ProbeWritable());
         Assert.Equal(AppSettings.Default, store.LoadSettings());
         Assert.Single(Directory.GetFiles(dir.Path, "settings.json.corrupt-*"));
-        Assert.Contains(store.Messages, m => m.Key == "Settings.RecoveredFromCorrupt");
+        Assert.Contains(store.Messages, m => m.Key == "InfoBar.SettingsRecovered");
     }
 
     [Fact]
