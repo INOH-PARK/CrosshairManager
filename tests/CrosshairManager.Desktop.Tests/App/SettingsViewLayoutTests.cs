@@ -120,6 +120,27 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
         Assert.Contains("PresetList", onAdvanced);
     }
 
+    /// <summary>Peers fall back to x:Name when no AutomationId is set, so a named host could shadow the preview Image in UI Automation.</summary>
+    [Fact]
+    public void Preview_AutomationIdBelongsOnlyToThePreviewImage()
+    {
+        var owners = WpfThread.Run(() =>
+        {
+            WpfThread.EnsureApplication();
+            using var dir = new AppTestDir();
+            var shell = new FakeAppShell(dir.Path);
+            using var vm = new SettingsViewModel(shell, new FakeDialogs(), new FakeMonitors(), new ManualDebounce());
+            var view = new SettingsView { DataContext = vm };
+            Layout(view);
+            return Descendants(view).OfType<UIElement>()
+                .Where(e => System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(e)?.GetAutomationId() == "Preview")
+                .Select(e => e.GetType().Name)
+                .ToList();
+        });
+
+        Assert.Equal([nameof(Image)], owners);
+    }
+
     [Fact]
     public void Preview_IsEightDevicePixelsPerSourcePixel()
     {

@@ -57,7 +57,7 @@ public sealed class LocalizationTests(ITestOutputHelper output)
         var koFile = Path.Combine(repo, "Strings.ko.resx");
         using var app = new AppFixture();
         var window = app.SettingsWindow();
-        var combo = Retry.WhileNull(() => window.FindFirstDescendant(cf => cf.ByAutomationId("Language")), AppFixture.UiTimeout, throwOnTimeout: true).Result!.AsComboBox();
+        var combo = AppFixture.SelectTab(window, "TabAdvanced", "Language").AsComboBox();
 
         foreach (var (code, nameKey, file) in new[] { ("ko", "Language.Korean", koFile), ("en", "Language.English", enFile) })
         {
