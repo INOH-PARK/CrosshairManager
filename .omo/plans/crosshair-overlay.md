@@ -179,7 +179,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
 ## Todos
 > Implementation + Test = ONE todo. Never separate.
 <!-- APPEND TASK BATCHES BELOW THIS LINE WITH edit/apply_patch - never rewrite the headers above. -->
-- [ ] 1. 저장소, 툴체인, 솔루션, 인터롭 목록, 계약 문서 뼈대 만들기
+- [x] 1. 저장소, 툴체인, 솔루션, 인터롭 목록, 계약 문서 뼈대 만들기
   Recommended task executor category: unspecified-low - 여러 파일을 만드는 기계적인 뼈대 작업이고 모든 선택은 Must have에 정해져 있다.
   What to do: `E:/MyData/Projects/CrosshairManager`에서 `git init`; `dotnet new gitignore` 후 `artifacts/`, `TestResults/`, `.omo/evidence/` 추가; `.editorconfig`(C# 기본값, 들여쓰기 4칸); `global.json`; `Directory.Build.props`; `LICENSE`(MIT 원문, `Copyright (c) 2026 ButterCoconut`); `dotnet new sln --format sln -n CrosshairManager`; Must have 구조의 프로젝트 10개를 `dotnet new classlib|wpf|console|xunit`로 만들고 TFM/AssemblyName을 정확히 설정, 모두 `CrosshairManager.sln`에 추가, 의존 규칙대로 참조 연결. 패키지: Platform·TestSupport·SendHotkey에 `Microsoft.Windows.CsWin32`(PrivateAssets all); Platform에 `Microsoft.Win32.SystemEvents`(10.x 최신; WPF가 아닌 프로젝트는 WindowsDesktop 참조 팩을 쓸 수 없음); App에 `CommunityToolkit.Mvvm`, `H.NotifyIcon.Wpf`; 모든 테스트 프로젝트에 `xunit` 2.9.x + `xunit.runner.visualstudio` 3.x + `Microsoft.NET.Test.Sdk` 17.x(템플릿이 만든 것은 교체; xunit.v3 금지); Ui.Tests에 `FlaUI.UIA3`. App과 Cli에 Must have의 `app.manifest`. Platform `NativeMethods.txt` - 함수: CreateWindowEx, RegisterClassEx, UnregisterClass, DefWindowProc, GetMessage, TranslateMessage, DispatchMessage, PostMessage, PostQuitMessage, PostThreadMessage, ShowWindow, SetWindowPos, GetWindow, GetWindowRect, IsWindow, IsWindowVisible, DestroyWindow, UpdateLayeredWindow, CreateDIBSection, CreateCompatibleDC, DeleteDC, SelectObject, DeleteObject, GetDC, ReleaseDC, BitBlt, EnumDisplayMonitors, GetMonitorInfo, MonitorFromPoint, GetDpiForMonitor, SetProcessDpiAwarenessContext, GetThreadDpiAwarenessContext, AreDpiAwarenessContextsEqual, RegisterHotKey, UnregisterHotKey, SetWinEventHook, UnhookWinEvent, GetForegroundWindow, SetForegroundWindow, AttachThreadInput, GetWindowThreadProcessId, GetCurrentThreadId, WindowFromPoint, GetWindowLongPtr, SetWindowLongPtr, SetTimer, KillTimer, DwmFlush, FillRect, CreateSolidBrush, BeginPaint, EndPaint; 열거형 타입(멤버 이름이 아니라 타입 이름으로 적음): WINDOW_STYLE, WINDOW_EX_STYLE, SET_WINDOW_POS_FLAGS, SHOW_WINDOW_CMD, UPDATE_LAYERED_WINDOW_FLAGS, HOT_KEY_MODIFIERS, GET_WINDOW_CMD, WINDOW_LONG_PTR_INDEX, ROP_CODE, DIB_USAGE, MONITOR_DPI_TYPE; #define 상수: WM_HOTKEY, WM_TIMER, WM_APP, WM_DESTROY, HWND_TOPMOST, HWND_TOP, HWND_MESSAGE, AC_SRC_OVER, AC_SRC_ALPHA, EVENT_SYSTEM_FOREGROUND, WINEVENT_OUTOFCONTEXT. 규칙: CsWin32가 어떤 이름을 찾지 못했다고 경고하면(경고는 빌드 오류) 그 이름을 지우고 그것을 담은 열거형 타입 이름으로 바꾼다. TestSupport `NativeMethods.txt`: CreateWindowEx, RegisterClassEx, DefWindowProc, DestroyWindow, IsWindow, IsWindowVisible, GetWindowRect, GetWindowLongPtr, SetForegroundWindow, GetForegroundWindow, AttachThreadInput, GetWindowThreadProcessId, GetCurrentThreadId, SetWindowPos, SendInput, DwmFlush, FillRect, CreateSolidBrush, BeginPaint, EndPaint, PeekMessage, TranslateMessage, DispatchMessage, GetThreadDpiAwarenessContext, AreDpiAwarenessContextsEqual, SetProcessDpiAwarenessContext, INPUT, KEYBDINPUT, HWND_TOP. SendHotkey `NativeMethods.txt`: SendInput, INPUT, KEYBDINPUT, VIRTUAL_KEY. Desktop/Ui 테스트 어셈블리에 병렬 실행 끄기 특성과 ModuleInitializer(Must have). 템플릿의 `UnitTest1.cs` 삭제. `scripts/build.ps1`, `scripts/verify.ps1`(동작은 Verification strategy; Windows PowerShell 5.1 호환). `docs/contracts.md`(한국어): Must have의 모델 표, 처리 순서, 도형 규칙, 설정 스키마, AutomationId, 단축키 기본값, todo 14의 CLI 문법을 옮겨 적고 해석된 패키지 버전을 기록. H.NotifyIcon.Wpf가 복원되고 TaskbarIcon이 있는 WPF 앱이 빌드와 단일 파일 게시까지 되는지 확인(`dotnet publish src/CrosshairManager.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o "$env:TEMP\chm-pubprobe"` 후 그 폴더 삭제). 복원이나 게시가 실패하면 패키지를 빼고, todo 15가 CsWin32의 `Shell_NotifyIcon`으로 `Platform/Tray/NativeTrayIcon.cs`에 트레이를 구현해야 한다고 contracts.md에 기록(Platform NativeMethods.txt에 Shell_NotifyIcon, NOTIFYICONDATAW, TrackPopupMenu, CreatePopupMenu, AppendMenu, DestroyMenu, LoadImage 추가).
   Must NOT do: 기능 코드 금지. 목록에 없는 패키지 금지.
@@ -190,7 +190,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1; $LASTEXITCODE` -> `0`, 출력을 `.omo/evidence/task-1-crosshair-overlay.txt`에 저장. failure - `C:\Windows\System32\cmd.exe`를 `$env:TEMP\chm-fake\CrosshairManager.exe`로 복사해 `/k`로 실행한 뒤 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify.ps1` -> `already running`을 포함한 메시지와 exit 1; 가짜 프로세스 종료(`Stop-Process -Name CrosshairManager`), `$env:TEMP\chm-fake` 삭제, `Get-Process CrosshairManager -ErrorAction SilentlyContinue`가 비었는지 확인; 같은 증거 파일에 덧붙임.
   Commit: Y | chore: scaffold CrosshairManager solution
 
-- [ ] 2. Core 모델, Rgb 파싱, Normalize, ApplyScale (TDD)
+- [x] 2. Core 모델, Rgb 파싱, Normalize, ApplyScale (TDD)
   Recommended task executor category: quick - 고정된 표에 따른 레코드와 범위 자르기.
   What to do: `src/CrosshairManager.Core/Model/`: `Rgb`(readonly record struct; `Parse/TryParse`가 `#RRGGBB`, `RRGGBB`, `#RGB`를 받음; `ToString()`은 대문자 `#RRGGBB`), `DotSpec`, `LineSpec`, `OutlineSpec`, Must have 모델 표 그대로의 `CrosshairSpec`, `CrosshairSpec.Default`, `Normalize()` -> `(CrosshairSpec Spec, IReadOnlyList<string> Warnings)`, 처리 순서에 맞는 `ApplyScale()`. 테스트를 먼저 `tests/CrosshairManager.Core.Tests/Model/`에 작성.
   Must NOT do: JSON 금지(todo 8), 도형 계산 금지.
@@ -201,7 +201,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - `dotnet test tests/CrosshairManager.Core.Tests --filter FullyQualifiedName~Model` -> `.omo/evidence/task-2-crosshair-overlay.txt`(Failed 0). failure - 같은 파일에 `--list-tests`로 `#GG0000` 테스트와 범위 경고 테스트가 있음을 기록(이 테스트들이 거부 경로를 단언).
   Commit: Y | feat(core): crosshair model and normalization
 
-- [ ] 3. Core 도형 계산: CrosshairLayout + OverlayPlacement (TDD)
+- [x] 3. Core 도형 계산: CrosshairLayout + OverlayPlacement (TDD)
   Recommended task executor category: deep-low - 홀짝 조합별 픽셀 단위 스냅 계산; 테스트로 판정된다.
   What to do: `src/CrosshairManager.Core/Geometry/`(IntRect는 todo 4에서 이미 만듦): `ShapeRole` {Dot,Top,Bottom,Left,Right}, `GeomRect`, `CrosshairGeometry`(CanvasW, CanvasH, PivotX, PivotY, AnchorX, AnchorY, Fills, OutlineThickness, RotationDeg, Color, OutlineColor, DotAlpha, LineAlpha, OutlineAlpha), `CrosshairLayout.Compute(CrosshairSpec scaled, bool oddWidth, bool oddHeight)`, `OverlayPlacement.Compute(CrosshairGeometry g, IntRect monitorPhysical, int offsetX, int offsetY) -> (IntRect Window, IntRect CanvasRegion)`(모니터 범위로 자름; 완전히 벗어나면 둘 다 비어 있음). Must have 도형 규칙 그대로 구현; 꺼진 부분과 길이 0인 선은 사각형을 만들지 않음; 모든 부분이 꺼지면 CanvasW = CanvasH = 0.
   Must NOT do: 래스터화 금지, Windows API 금지.
@@ -212,7 +212,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - `dotnet test tests/CrosshairManager.Core.Tests --filter FullyQualifiedName~Geometry` -> `.omo/evidence/task-3-crosshair-overlay.txt`. failure - 모니터를 완전히 벗어난 경우 빈 Window를 단언하는 테스트(증거에 기록).
   Commit: Y | feat(core): pixel-exact crosshair geometry
 
-- [ ] 4. Core IntRect, PixelBuffer, PNG 인코더, AtomicFile (TDD)
+- [x] 4. Core IntRect, PixelBuffer, PNG 인코더, AtomicFile (TDD)
   Recommended task executor category: quick - 작고 독립적인 유틸리티.
   What to do: `Geometry/IntRect`(X,Y,W,H 반열린 구간, `IsEmpty`; todo 3, 5, 6, 11이 사용); `Render/PixelBuffer`(Width, Height, premultiplied BGRA 위에서 아래, stride Width*4, `GetPixel`, 바이트 비교 `Equals`); `Render/Png.Encode(PixelBuffer)`(premultiply 해제한 RGBA8, `ZLibStream`, 256개 항목 표를 쓰는 CRC32 직접 구현)와 이 인코더와 CLI가 만드는 파일을 읽는 `Png.Decode(byte[])`(8비트 RGBA/RGB, 필터 0-4); Must have에 따른 `IO/AtomicFile.WriteAllText/WriteAllBytes`(폴더 생성; 쓸 수 없는 폴더면 `IOException`).
   Must NOT do: Core에서 System.Drawing/WPF 금지.
@@ -223,7 +223,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - Core + Desktop 테스트 실행(필터 `~Png|~AtomicFile`) -> `.omo/evidence/task-4-crosshair-overlay.txt`. failure - 같은 실행의 바이트 뒤집기 CRC 테스트.
   Commit: Y | feat(core): pixel buffer, png codec, atomic file writes
 
-- [ ] 5. Platform OverlayHost: 전용 스레드의 클릭 통과 레이어드 창
+- [x] 5. Platform OverlayHost: 전용 스레드의 클릭 통과 레이어드 창
   Recommended task executor category: deep-low - 실제 데스크톱에서의 Win32 인터롭과 스레딩.
   What to do: `src/CrosshairManager.Platform/Overlay/OverlayHost.cs`: 메시지 루프를 가진 백그라운드 스레드 "Overlay"; 창 클래스 `CrosshairManager.Overlay`; 오버레이 HWND(Must have 스타일)와 메시지 전용 컨트롤러 HWND; `PostMessage(WM_APP+1)` + 큐로 동작하는 `Invoke(Action)`; `Update(PixelBuffer buffer, IntRect screenRect)`(32bpp 위에서 아래 DIB section, `BLENDFUNCTION{AC_SRC_OVER,0,255,AC_SRC_ALPHA}`로 `UpdateLayeredWindow`; 빈 버퍼나 빈 사각형이면 숨김); `Show()`(SW_SHOWNOACTIVATE), `Hide()`, `IsVisible`, `Handle`, `ControllerHandle`, 이벤트 `Updated`, `VisibilityChanged`; `Dispose()`는 WM_QUIT을 보내고 스레드 종료를 기다림(5초 상한, 넘으면 `TimeoutException`). `Dpi/DpiAwareness.EnsurePerMonitorV2()` 헬퍼.
   Must NOT do: WPF 참조 금지, 전체 화면 창 금지, 타이머로 다시 그리기 금지.
@@ -234,7 +234,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - `dotnet test tests/CrosshairManager.Desktop.Tests --filter "Category=Desktop&FullyQualifiedName~OverlayHost"` -> `.omo/evidence/task-5-crosshair-overlay.txt`, 건너뜀 0. failure - 같은 실행의 빈 버퍼 숨김 테스트.
   Commit: Y | feat(platform): layered click-through overlay host
 
-- [ ] 6. Platform MonitorService (다중 모니터, 물리 좌표)
+- [x] 6. Platform MonitorService (다중 모니터, 물리 좌표)
   Recommended task executor category: quick - EnumDisplayMonitors 래퍼.
   What to do: Core `Settings/MonitorSelection` 레코드(`Mode` Primary|Device, `DeviceName`); Platform `Monitors/MonitorService`: `GetMonitors()` -> `MonitorInfo`(DeviceName, Bounds, WorkArea, IsPrimary, GetDpiForMonitor MDT_EFFECTIVE_DPI로 얻은 DpiX, DpiY), `Resolve(MonitorSelection, out bool fellBack)`, `SystemEvents.DisplaySettingsChanged`에서 발생하는 이벤트 `Changed`.
   Must NOT do: 모니터를 순번으로 식별하지 않는다.
@@ -245,7 +245,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 모니터 목록 출력이 포함된 실행 -> `.omo/evidence/task-6-crosshair-overlay.txt`. failure - 같은 실행의 대체 테스트.
   Commit: Y | feat(platform): monitor enumeration and selection
 
-- [ ] 7. Core HotkeyGesture + Platform GlobalHotkeys(전용 메시지 창) + TestSupport Input
+- [x] 7. Core HotkeyGesture + Platform GlobalHotkeys(전용 메시지 창) + TestSupport Input
   Recommended task executor category: unspecified-low - 파서와 RegisterHotKey 래퍼.
   What to do: Core `Settings/HotkeyGesture`: `TryParse`(수정키 Ctrl/Alt/Shift/Win 순서 무관, 대소문자 무관; 키 A-Z, 0-9, F1-F24, Left/Right/Up/Down, Home/End/PageUp/PageDown/Insert/Delete, NumPad0-9; F13-F24를 빼면 수정키 1개 이상 필수), 정규 `ToString()` 순서 Ctrl+Alt+Shift+Win+Key, `Modifiers`(MOD_* 값), `VirtualKey`. Platform `Hotkeys/GlobalHotkeys`: 전용 백그라운드 스레드 + 메시지 전용 창; `TryRegister(string id, HotkeyGesture g, out int win32Error)`(자기 스레드로 넘겨 처리, MOD_NOREPEAT 추가), `Unregister(id)`, 이벤트 `Pressed(string id)`, `Dispose`. TestSupport `Input.SendChord(HotkeyGesture)`(SendInput 키 누름/뗌 순서)도 이 todo에서 만든다.
   Must NOT do: 저수준 훅 금지, OverlayHost 의존 금지.
@@ -256,7 +256,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 테스트 출력 -> `.omo/evidence/task-7-crosshair-overlay.txt`. failure - 중복 등록 테스트.
   Commit: Y | feat: hotkey gesture parsing and global hotkeys
 
-- [ ] 8. Core 프리셋: 스키마 v1, 소스 생성 JSON, PresetStore, 내장 프리셋, 마이그레이션
+- [x] 8. Core 프리셋: 스키마 v1, 소스 생성 JSON, PresetStore, 내장 프리셋, 마이그레이션
   Recommended task executor category: unspecified-high - 버전 관리와 실패 경로를 가진 저장 계약.
   What to do: `Presets/Preset`(Id, Name, CreatedUtc, ModifiedUtc, Crosshair, IsBuiltIn), `PresetJson`(JsonSerializerContext, camelCase, Rgb는 "#RRGGBB"), `PresetFile.Load(string json)` -> `Ok(Preset, warnings) | NewerVersion(int) | Broken(reason)`, `Migrations`(int -> Func<JsonNode,JsonNode>; v1에서는 비어 있지만 `< current`면 체인을 실행), `BuiltInPresets`(Must have의 임베디드 JSON 6개; Name에는 resx 키), `PresetStore(string dataDir)`: `LoadAll()`(Must have 정렬), `Create(name, spec)`, `Save`, `Rename`, `Duplicate`, `Delete`(파일 + `.bak`), `ImportFile(path)`(Id 충돌 시 새 GUID), `ExportFile(id, path)`; 내장 프리셋을 바꾸려 하면 `InvalidOperationException`. 픽스처 `tests/fixtures/presets/v1.json`.
   Must NOT do: NewerVersion/Broken 파일은 절대 다시 쓰지 않는다.
@@ -267,7 +267,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 테스트 출력 -> `.omo/evidence/task-8-crosshair-overlay.txt`. failure - NewerVersion 파일 미변경(해시) 테스트.
   Commit: Y | feat(core): versioned preset storage and built-in presets
 
-- [ ] 9. Core AppSettings, SettingsStore, DataDirectory
+- [x] 9. Core AppSettings, SettingsStore, DataDirectory
   Recommended task executor category: quick - todo 8과 같은 패턴의 스키마 하나.
   What to do: Must have에 따른 `Settings/AppSettings`(기본값: `builtin.default`, overlayVisible true, 주 모니터, 단축키 기본값, language `system`, startWithWindows false, disclaimerAccepted false, placement null); `SettingsStore(dataDir)`: `Load()` -> `(AppSettings, SettingsLoadStatus Ok|CreatedDefault|RecoveredFromCorrupt(backupPath)|NewerVersion)`, `Save`(원자적; IOException을 그대로 전달); 잘못된 단축키 문자열 -> 그 단축키는 null + 경고; Must have에 따른 `DataDirectory.Resolve(string[] args, IDictionary env)`와 `DataDirectory.Normalize(path)`.
   Must NOT do: 레지스트리 금지.
@@ -278,7 +278,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy/failure - 손상 경우를 포함한 테스트 출력 -> `.omo/evidence/task-9-crosshair-overlay.txt`.
   Commit: Y | feat(core): app settings persistence
 
-- [ ] 10. Core 공유 코드 CHM1
+- [x] 10. Core 공유 코드 CHM1
   Recommended task executor category: quick - 검증을 포함한 인코드/디코드.
   What to do: Must have에 따른 `Presets/ShareCode.Encode(string name, CrosshairSpec spec)`와 `TryDecode(string code, out string name, out CrosshairSpec spec, out IReadOnlyList<string> warnings, out string errorKey)`; 정규 JSON은 기본값과 같은 값을 생략; 앞뒤 공백 제거; 디코드한 사양은 Normalize.
   Must NOT do: 네트워크 금지, raw deflate 외 압축 금지.
@@ -289,7 +289,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 인코드한 기본 코드를 포함한 출력 -> `.omo/evidence/task-10-crosshair-overlay.txt`. failure - 거부 테스트 5개.
   Commit: Y | feat(core): preset share codes
 
-- [ ] 11. Platform TopmostKeeper + ScreenProbe; TestSupport BackdropWindow, Eventually, Composite
+- [x] 11. Platform TopmostKeeper + ScreenProbe; TestSupport BackdropWindow, Eventually, Composite
   Recommended task executor category: deep-low - WinEvent 훅, z-order, 캡처 동작.
   What to do: Must have에 따른 Platform `Overlay/TopmostKeeper(OverlayHost)`(Invoke로 오버레이 스레드에서 훅 + 타이머). Platform `Capture/ScreenProbe.Capture(IntRect)`(DwmFlush, GetDC(NULL) + BitBlt SRCCOPY|CAPTUREBLT로 32bpp DIB에 복사, 알파는 255로 고정)와 `WindowAt(int x,int y)`. Platform `Capture/Backdrop(IntRect rect, Rgb color)`(전용 스레드, 최상단이 아닌 일반 팝업, 단색 칠하기, Must have 포그라운드 가져오기 규칙을 따르는 `BringToFront()`, `Handle`, Dispose; Cli와 테스트만 사용). TestSupport: Platform `Capture/Backdrop`을 감싸는 `BackdropWindow`, `Eventually.True(Func<bool>, TimeSpan)`(Must have 캡처 규칙), `Composite.Over(PixelBuffer premul, Rgb backdrop) -> PixelBuffer`.
   Must NOT do: App이 ScreenProbe를 참조하지 않는다.
@@ -300,7 +300,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 출력 -> `.omo/evidence/task-11-crosshair-overlay.txt`. failure - keeper Dispose 테스트와 불필요한 재설정 없음 테스트.
   Commit: Y | feat(platform): topmost maintenance and screen probe
 
-- [ ] 12. Core CrosshairRasterizer + ASCII 기준 그림과 성질 테스트
+- [x] 12. Core CrosshairRasterizer + ASCII 기준 그림과 성질 테스트
   Recommended task executor category: deep-low - 정확한 래스터 규칙; 기준 그림과 성질로 판정된다.
   What to do: Must have에 따른 `Render/CrosshairRasterizer.Render(CrosshairGeometry)`와 `Render(g, IntRect canvasRegion)`; TestSupport.Core `AsciiArt.From(PixelBuffer)`(채움 `X`, 외곽선 `o`, 빈칸 `.`, 부분 `+`)와 `GoldenComparer`(처음 다른 행/열 보고). 기준 그림 `tests/CrosshairManager.Core.Tests/Goldens/*.txt`: 기본 짝수, 기본 홀수, 점만 1/2/3, classic1px, T자형, classic1px 짝/짝과 홀/홀(교차점부터 네 방향 빈칸이 같음), gap 0, gap -2, 외곽선 3, 1px 틈을 메우는 외곽선(점 2, L2 T2 G2, 외곽선 1: 점과 선 사이 빈 1px을 외곽선이 채움), 잘린 영역, 90도 회전한 T자형(Right 팔이 없음 = 시계 방향), 45도 회전한 십자.
   Must NOT do: 90의 배수 회전에서 슈퍼샘플링 금지.
@@ -311,7 +311,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 기본 기준 그림을 붙인 출력 -> `.omo/evidence/task-12-crosshair-overlay.txt`. failure - 비교기 자체 테스트.
   Commit: Y | feat(core): pixel-perfect crosshair rasterizer
 
-- [ ] 13. 데스크톱 종단 테스트: 픽셀 일치, 클릭 통과, z-order, 단축키, 두 번째 모니터
+- [x] 13. 데스크톱 종단 테스트: 픽셀 일치, 클릭 통과, z-order, 단축키, 두 번째 모니터
   Recommended task executor category: deep-low - Core와 Platform을 묶은 실제 데스크톱 테스트.
   What to do: Desktop 테스트(모두 BackdropWindow 위, 캡처 규칙 준수): (a) builtin.default, builtin.dot, builtin.classic1px를 100%로 -> 처리 순서 -> OverlayHost.Update -> 캡처 == #FF00FF 위 합성 결과와 정확히 일치; (b) 불투명도 50% 사양은 채널당 +-1 이내; (c) builtin.x45는 +-2 이내; (d) WindowAt(P) == 배경창 HWND; (e) z-order 복구; (f) GlobalHotkeys `Ctrl+Alt+Shift+F12`로 숨김 -> 캡처 == 배경색만; (g) 첫 번째 비주 모니터에 배치하면 그 모니터에서 일치. 각 경우 `expected.png`/`actual.png`를 `TestResults/desktop/<case>/`에 저장.
   Must NOT do: sleep 금지, 건너뛰기 금지.
@@ -322,7 +322,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - trx 요약 + PNG 경로 -> `.omo/evidence/task-13-crosshair-overlay.txt`. failure - (f)가 숨긴 뒤 배경색만 보이는지 단언.
   Commit: Y | test(desktop): end-to-end overlay pixel and behavior tests
 
-- [ ] 14. CLI `crosshair`: render, validate, capture, compare, verify-overlay, ico
+- [x] 14. CLI `crosshair`: render, validate, capture, compare, verify-overlay, ico
   Recommended task executor category: unspecified-low - 기존 Core/Platform API를 감싸는 명령.
   What to do: `tools/CrosshairManager.Cli`(EnsurePerMonitorV2 호출 + manifest):
   - `render <presetIdOrJsonPath> <out.png> [--zoom 1..32 (8)] [--bg #RRGGBB] [--odd] [--data-dir <dir>]`
@@ -340,7 +340,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 출력 + out.png -> `.omo/evidence/task-14-crosshair-overlay.{txt,png}`. failure - `render nope.json x.png` exit 2; 앱이 없을 때 `verify-overlay`(숨김 아님) exit 1.
   Commit: Y | feat(cli): render, compare and overlay verification commands
 
-- [ ] 15. App 셸: 구성 루트, Loc 기반, OverlayController, 트레이, 단일 인스턴스, 시작
+- [x] 15. App 셸: 구성 루트, Loc 기반, OverlayController, 트레이, 단일 인스턴스, 시작
   Recommended task executor category: unspecified-high - Core, Platform, WPF를 잇는 여러 파일 배선.
   What to do: `App.xaml(.cs)`(ShutdownMode OnExplicitShutdown): 인자 `--data-dir`, `--settings`, `--hidden`; DataDirectory; 단일 인스턴스(Must have); SettingsStore/PresetStore를 상태와 함께 로드 -> 대기 중인 InfoBar 메시지; OverlayHost + TopmostKeeper + MonitorService + GlobalHotkeys; `OverlayController.Apply(CrosshairSpec)`(Dispatcher Background 우선순위로 합침; 처리 순서; 모니터에서 홀짝; MonitorService.Changed 때 다시 실행); 표시 우선순위(Must have); 단축키 동작: 켜기/끄기(overlayVisible 저장), 다음/이전(activePresetId 저장), 설정 열기; todo 16이 쓰는 `IAppShell` 경계: `OpenSettings()`, `Apply(spec)`, `Presets`, `Settings`, `SaveSettings()`, `HotkeyStatus`(id -> 등록됨/오류 코드), `RebindHotkey(id, gesture)`, `SetStartWithWindows(bool)`, `PendingMessages`; `Localization/Loc` + 이 todo가 쓰는 트레이/InfoBar/오류 키를 담은 `Resources/Strings.resx`(영어); `Tray/TrayIcon`(H.NotifyIcon.Wpf, todo 1이 대체안을 기록했다면 NativeTrayIcon)의 메뉴 항목에 TrayOpenSettings/TrayToggleOverlay/TrayPresets(라디오 하위 메뉴)/TrayExit AutomationId, 툴팁 `CrosshairManager`; `crosshair ico`로 만든 `Assets/app.ico`를 커밋하고 `ApplicationIcon`으로도 지정; `Startup/AutoStart`(Must have); 표지 줄을 쓰는 `Logging/FileLog`; 쓸 수 없는 데이터 폴더 처리(Must have); Dispatcher 미처리 예외는 기록하고 메시지 상자를 띄운 뒤 계속 실행. `tests/tools/SendHotkey` 프로그램: `SendHotkey <gesture>`가 SendInput으로 조합을 보내고 exit 0. 자리표시 `SettingsWindow`는 여기서 만들지 않는다. `OpenSettings()`는 todo 16이 구독할 이벤트를 발생시킨다(그 전까지는 `settings requested`를 기록).
   Must NOT do: 설정 컨트롤 금지, ScreenProbe 참조 금지, App에서 SendInput 금지.
@@ -351,7 +351,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 전체 출력 + verify-overlay PNG -> `.omo/evidence/task-15-crosshair-overlay.txt`; 정리: `Stop-Process -Name CrosshairManager`, `Get-Process CrosshairManager -ErrorAction SilentlyContinue`가 비었는지 확인, `$d` 삭제. failure 1 - `settings.json` 손상(`Set-Content $d\settings.json '{'`) -> 앱이 시작되고 `settings.json.corrupt-*`가 생기며 `verify-overlay` exit 0. failure 2 - 시작 전 `icacls $d /deny "$($env:USERNAME):(W)"` -> 대체 로그 `%TEMP%\CrosshairManager-fallback.log`에 `data dir read-only`와 `overlay shown`(게이트는 위와 같음), `Get-Process CrosshairManager` 살아 있음, `verify-overlay --data-dir $d` exit 0; 그 뒤 `icacls $d /remove:d $env:USERNAME`, 프로세스 종료, 대체 로그 삭제.
   Commit: Y | feat(app): overlay controller, tray, hotkeys and single instance
 
-- [ ] 16. 설정 창, 프리셋 영역, 실시간 미리보기, 색 편집기, 단축키 상자, 안내 + Ui 테스트 픽스처
+- [x] 16. 설정 창, 프리셋 영역, 실시간 미리보기, 색 편집기, 단축키 상자, 안내 + Ui 테스트 픽스처
   Recommended task executor category: visual-engineering - MVVM과 고정 AutomationId를 갖춘 WPF UI/UX.
   What to do: `IAppShell` 위의 `ViewModels/`(CommunityToolkit.Mvvm): `SettingsViewModel`(실시간 적용, 400 ms 자동 저장, 내장 프리셋 자동 사본, 경고), `PresetListViewModel`(새로 만들기/복제/이름 변경(RenameText/RenameOk 대화상자)/삭제(ConfirmDeleteOk/Cancel), 필터 `*.json`의 OpenFileDialog/SaveFileDialog로 가져오기/내보내기, CopyShareCode로 클립보드 복사, ShareCodeInput + PasteShareCode와 ShareCodeError), `LineViewModel` 4개 + LinkLines(편집을 모든 선에 반영) + TStyle; Must have에 따른 `Views/SettingsWindow.xaml`(간단: 견본색 8개, SimpleScale, SimpleOpacity, SimpleOutline; 상세 그룹: 색 / 점 / 선 / 외곽선 / 변형(Opacity, Scale, Rotation, OffsetX, OffsetY) / 표시(MonitorSelect, MonitorWarning) / 단축키(HotkeyBox 4개, HotkeyError) / 일반(Language, StartWithWindows, OverlayVisible)); `PreviewControl`; `HotkeyBox`(IME/SystemKey 규칙); `InfoBar`(전체화면 안내는 항상, 대기 메시지, 모니터 대체 경고); `DisclaimerDialog`(전체화면, 안티치트/약관, 단축키 한계 문구; DisclaimerOk가 disclaimerAccepted 저장); 창 위치 저장/복원; 모든 컨트롤에 고정 AutomationId; 새 키는 모두 `Strings.resx`(영어)에 추가. Ui.Tests: `AppFixture`(고유 임시 데이터 폴더 + 미리 만든 설정 + `--settings`로 exe 실행, UIA3 연결, Dispose에서 프로세스 종료 후 HasExited 단언, 폴더 삭제)와 테스트: (u1) Must have에서 "항상 보이는 컨트롤이 아닌 것"을 뺀 모든 고정 AutomationId가 존재하고, `IsOffscreen == false`, BoundingRectangle이 창 안, 형제 말단 컨트롤끼리 겹치지 않음(두 탭 모두); (u2) 첫 실행: 설정 없는 새 폴더 -> DisclaimerDialog 표시 -> DisclaimerOk -> settings.json `disclaimerAccepted == true` -> 다시 실행 -> 창 준비 후 3초 동안 DisclaimerDialog 없음; (u3) ColorHex `#GG0000` -> TextBox가 검증 오류 상태(UIA HelpText/ItemStatus 설정)이고 `crosshair verify-overlay --data-dir <픽스처 폴더>`가 이전 색으로 exit 0.
   Must NOT do: HSV 사각형 금지, 테마 라이브러리 금지, 사용자에게 보이는 문자열 하드코딩 금지.
@@ -362,7 +362,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 두 탭의 FlaUI `Capture.Element` -> `.omo/evidence/task-16-crosshair-overlay-{simple,advanced}.png` + 테스트 출력 `.txt`. failure - u3(잘못된 hex 입력이 오버레이를 바꾸지 않음).
   Commit: Y | feat(app): settings window with simple and advanced modes
 
-- [ ] 17. 한국어 현지화 + 실행 중 언어 전환
+- [x] 17. 한국어 현지화 + 실행 중 언어 전환
   Recommended task executor category: unspecified-low - resx 번역과 작은 런타임 전환, 테스트.
   What to do: 모든 키를 번역한 `Resources/Strings.ko.resx`(자연스러운 한국어 게임 용어: 크로스헤어, 점, 선, 간격, 두께, 길이, 외곽선, 불투명도, 프리셋, 단축키); Language 콤보 -> `Loc.SetLanguage` 즉시 적용 + 저장; `system`은 `CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ko"`이면 ko, 아니면 en. Ui.Tests: (l1) Strings.resx와 Strings.ko.resx의 키 집합 일치(둘 다 XML로 읽음), 빈 값 없음; (l2) Language를 en으로 -> `TabSimple`의 Name == Strings.resx의 `Tab.Simple` 값; ko로 -> Strings.ko.resx의 값; 저장된 `language` 갱신.
   Must NOT do: 세 번째 언어 금지, TODO 같은 자리표시 문구 금지.
@@ -373,7 +373,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 두 언어 스크린샷 -> `.omo/evidence/task-17-crosshair-overlay-{ko,en}.png` + 출력. failure - 키 하나를 지운 Strings.ko.resx 임시 사본으로 l1 실행(환경변수 `CHM_RESX_DIR`이 있으면 그 경로를 읽음) -> 해당 키 이름과 함께 실패; 기록 후 원복.
   Commit: Y | feat(app): Korean and English localization
 
-- [ ] 18. UI 자동화: 편집 -> 파일 -> 오버레이 픽셀, 트레이, 대화상자, 단축키
+- [x] 18. UI 자동화: 편집 -> 파일 -> 오버레이 픽셀, 트레이, 대화상자, 단축키
   Recommended task executor category: unspecified-high - 계층을 가로지르는 종단 테스트.
   What to do: Ui.Tests(todo 16의 AppFixture; 오버레이 확인은 `crosshair verify-overlay --data-dir <픽스처 폴더>`를 프로세스로 실행해 종료 코드를 단언): (e1) builtin.default 선택, DotSize=5 -> presets/에 새 파일이 생길 때까지 Retry -> JSON `dot.size == 5` -> verify-overlay exit 0; (e2) ColorHex `#FF8800` -> Preview 요소 캡처에서 Core 렌더의 불투명 원본 픽셀마다 그 색의 8x8 장치 픽셀 블록에 대응; verify-overlay exit 0; (e3) 이름 변경(RenameText/RenameOk) -> 파일의 name 필드 갱신; 복제 -> 파일 2개; 삭제(ConfirmDeleteOk) -> 파일 없음; ConfirmDeleteCancel은 유지; (e4) SaveFileDialog로 내보내기(대화상자 파일 이름 입력란에 경로 입력 후 Enter) -> 파일 존재, `crosshair validate` exit 0; 다시 가져오기 -> 목록 항목 추가; (e5) CopyShareCode -> 클립보드가 `CHM1:`로 시작; 새 프리셋에서 ShareCodeInput에 붙여넣고 PasteShareCode -> 크로스헤어 일치; `CHM1:!!!` -> ShareCodeError 문구 == `ShareCode.Error.Base64`의 Loc 값; (e6) HotkeyToggle을 `Ctrl+Alt+Shift+F10`(SystemKey 경로)으로 설정 -> settings.json 갱신 -> `SendHotkey Ctrl+Alt+Shift+F10` -> verify-overlay `--expect-hidden` exit 0; 충돌: 테스트 프로세스가 `Ctrl+Alt+Shift+F9`를 RegisterHotKey로 먼저 등록한 뒤 `hotkeys.nextPreset = "Ctrl+Alt+Shift+F9"`를 미리 넣은 설정으로 앱 실행 -> HotkeyNext에 HotkeyError 표시; (e7) 두 번째 인스턴스 실행 -> 설정 창이 포그라운드가 됨; (e8) 손상된 설정으로 시작 -> InfoBar 문구 == `InfoBar.SettingsRecovered`의 Loc 값; (e9) TStyle -> verify-overlay exit 0, 프리셋 `top.enabled == false`; (e10) MonitorSelect를 첫 번째 비주 모니터로 -> verify-overlay `--monitor <device>` exit 0; (e11) 트레이: `Shell_TrayWnd` 아래에서 이름이 `CrosshairManager`인 버튼을 찾고, 없으면 작업 표시줄의 숨겨진 아이콘 표시 버튼을 눌러 넘침 영역 최상위 창(Windows 11은 클래스 `TopLevelWindowForOverflowXamlIsland`, Windows 10은 `NotifyIconOverflowWindow`)에서 찾음, 오른쪽 클릭 -> TrayToggleOverlay -> verify-overlay `--expect-hidden` exit 0; TrayPresets -> builtin.dot -> verify-overlay `--preset builtin.dot` exit 0; TrayExit -> 5초 안에 프로세스 종료; (e12) StartWithWindows 켜기 -> `HKCU\...\Run\CrosshairManager` == exe 경로; 끄기 -> 값 없음.
   Must NOT do: sleep 금지, 건너뛰기 금지, 번역 문자열 직접 사용 금지.
@@ -384,7 +384,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - trx 요약 + verify-overlay PNG 폴더 -> `.omo/evidence/task-18-crosshair-overlay.txt`. failure - 같은 실행의 e5 잘못된 코드와 e6 충돌 경로.
   Commit: Y | test(ui): end-to-end settings automation
 
-- [ ] 19. 유휴 성능 확인
+- [x] 19. 유휴 성능 확인
   Recommended task executor category: quick - 측정 스크립트.
   What to do: `scripts/perf-check.ps1 [-Exe <path>] [-MaxCpuPercent 0.5] [-MaxWorkingSetMB 150]`(Windows PowerShell 5.1 호환): 미리 만든 임시 데이터 폴더(설정 창 닫힘)로 앱 시작, 로그 `overlay shown` 게이트(10초 상한), `Wait-Process -Timeout 10`으로 대기하는 동안 `[Diagnostics.Stopwatch]`로 잰 10초 구간의 `TotalProcessorTime`과 `WorkingSet64`를 샘플링(프로세스가 끝나지 않으므로 이 대기가 곧 측정 구간이며 sleep이 아님), 코어 하나 기준 CPU%를 계산해 두 값 출력, 프로세스 종료 후 종료됐는지 단언, 폴더 삭제; 임계값을 넘으면 exit 1.
   Must NOT do: 확인이 실패하지 않는 한 앱 코드 수정 금지(실패하면 원인 파일에서 고치고 다시 실행).
@@ -395,7 +395,7 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
   QA scenarios: happy - 출력 -> `.omo/evidence/task-19-crosshair-overlay.txt`. failure - `-MaxCpuPercent -1` -> exit 1.
   Commit: Y | chore: idle performance check script
 
-- [ ] 20. 단일 파일 exe 게시, README(한국어 기본/영어), 고지 문서
+- [x] 20. 단일 파일 exe 게시, README(한국어 기본/영어), 고지 문서
   Recommended task executor category: writing - 문서와 게시 프로필.
   What to do: `src/CrosshairManager.App/Properties/PublishProfiles/win-x64.pubxml`(Release, win-x64, SelfContained, PublishSingleFile, IncludeNativeLibrariesForSelfExtract, EnableCompressionInSingleFile true, PublishTrimmed false, DebugType embedded); `scripts/publish.ps1` -> `artifacts/publish/CrosshairManager.exe`; `README.md`(한국어, 기본)와 `README.en.md`(영어): 기능, 스크린샷(todo 16/17 증거 PNG를 `docs/images/`로 복사), 사용법, 기본 단축키, 데이터 폴더, 테두리 없는 창모드 안내, 안티치트/약관 고지(코드 주입·후킹·메모리 읽기·화면 읽기 없음; The Finals는 외부 오버레이를 차단, Battlefield 6는 실행 중 바꿀 수 있는 크로스헤어 오버레이를 금지, Riot은 Vanguard 허용 목록이 없음 - 책임은 사용자; 초안 Findings의 URL 인용), 단축키 한계(시스템 단축키를 막는 게임에서는 트레이 사용), 녹화/방송에 오버레이가 찍힘, SmartScreen 안내(서명 없음), "Windows 11에서 테스트; Windows 10 1903+ 동작 예상", 빌드/테스트 명령; `THIRD-PARTY-NOTICES.md`(한국어 설명; CsWin32 MIT, Microsoft.Win32.SystemEvents MIT, CommunityToolkit.Mvvm MIT, H.NotifyIcon MIT, FlaUI MIT, xunit Apache-2.0; 테스트 전용 표시).
   Must NOT do: 설치 프로그램 금지, 서명 금지.
@@ -408,13 +408,13 @@ Your next move: 이 세션이나 새 세션에서 `/ulw-execute crosshair-overla
 
 ## Final verification wave
 > Runs in parallel after ALL todos. ALL must APPROVE. Surface results and wait for the user's explicit okay before declaring complete.
-- [ ] F1. Plan compliance audit
+- [x] F1. Plan compliance audit
   Recommended task executor category: unspecified-high - 모든 todo의 수용 기준과 Must NOT have를 점검한다. `src/`에서 SetWindowsHookEx, SendInput, App의 ScreenProbe/Capture.Backdrop 사용, HttpClient/Socket/WebRequest를, 테스트와 스크립트에서 `Skip =`, `Thread.Sleep`/`Task.Delay`/`Start-Sleep`을 `rg`로 검색한다.
-- [ ] F2. Code quality review
+- [x] F2. Code quality review
   Recommended task executor category: unspecified-high - 계층 규칙(Core의 project.assets에 Windows 패키지 없음, Platform에 WPF 없음), 경고=오류 상태 깨끗함, 죽은 코드 없음, contracts.md가 코드 시그니처와 일치하는지 검토한다.
-- [ ] F3. Real manual QA
+- [x] F3. Real manual QA
   Recommended task executor category: unspecified-high - 게시한 exe를 미리 만든 데이터 폴더로 이 데스크톱에서 실행한다. 최대화한 메모장(GDI)과 최대화한 Windows 계산기(DirectComposition/flip 모델 대용) 위의 크로스헤어, 클릭 통과(중앙을 클릭하면 아래 앱이 포그라운드가 됨), 트레이 동작, 단축키, 프리셋 전환, 언어 전환, 두 번째 모니터를 확인하고, 각 확인은 `crosshair verify-overlay` 종료 코드 + PNG로 증명한다. DPI 배율을 기록하고, 실제 안티치트 게임은 시험하지 않았음을 적는다.
-- [ ] F4. Ideal-state fidelity
+- [x] F4. Ideal-state fidelity
   Recommended task executor category: unspecified-high - IS-1..IS-12를 하나씩 증거와 대조한다. 부족한 부분은 새 번호의 todo가 된다.
 
 ## Commit strategy
