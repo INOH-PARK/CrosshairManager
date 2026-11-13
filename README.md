@@ -30,7 +30,7 @@ Windows용 크로스헤어 오버레이입니다. 화면 위에 작은 투명 �
 
 ## 사용법
 
-1. `CrosshairManager.exe`를 실행합니다. 처음 실행하면 주의 사항 대화상자가 뜹니다. 내용을 읽고 동의하세요.
+1. [Releases](https://github.com/INOH-PARK/CrosshairManager/releases)에서 `CrosshairManager-<버전>-win-x64.exe`를 내려받아 실행합니다. 처음 실행하면 주의 사항 대화상자가 뜹니다. 내용을 읽고 동의하세요.
 2. 트레이 아이콘을 더블클릭하거나, 오른쪽 클릭한 뒤 "설정 열기"를 골라 설정 창을 엽니다. 프리셋을 고르거나 값을 바꾸면 오버레이에 바로 반영됩니다.
 3. 게임은 **테두리 없는 창모드**(또는 창모드)로 실행합니다.
 4. 끌 때는 트레이 메뉴에서 종료를 고릅니다.
@@ -95,6 +95,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1
 - `verify.ps1`: 빌드한 뒤 Core, Desktop, Ui 테스트를 실행합니다. 실패하거나 건너뛴 테스트가 하나라도 있으면 실패합니다. 실행 전에 CrosshairManager를 꺼 두세요.
 - `perf-check.ps1`: 유휴 CPU와 메모리 사용량을 잽니다. `-Exe`로 검사할 exe를 지정할 수 있습니다.
 - `publish.ps1`: `artifacts\publish\CrosshairManager.exe` 단일 파일을 만들고 크기를 출력합니다.
+- `publish.ps1 -Version 1.2.3`: exe 파일 정보에 버전을 넣습니다.
+
+### CI와 릴리스
+
+- `main`에 push하거나 PR을 열면 GitHub Actions가 빌드하고, 창을 띄우지 않는 테스트(Core, Desktop의 App·CLI, 언어 키 일치)를 실행합니다. 화면을 쓰는 테스트는 실제 데스크톱이 필요해서 로컬 `verify.ps1`로만 돌립니다.
+- `v1.2.3` 형식의 태그를 push하면 같은 테스트를 거친 뒤 exe와 SHA-256 파일을 첨부한 GitHub Release가 자동으로 만들어집니다.
+
+```
+git tag v1.2.3
+git push origin v1.2.3
+```
 
 ## 라이선스
 

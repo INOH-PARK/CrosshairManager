@@ -1,6 +1,7 @@
 # Single-file self-contained publish (todo 20). Windows PowerShell 5.1.
 # Output: artifacts\publish\CrosshairManager.exe. Exit non-zero on any failure.
 # Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1
+param([string]$Version)
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $out = Join-Path $root 'artifacts\publish'
@@ -8,7 +9,9 @@ $proj = Join-Path $root 'src\CrosshairManager.App\CrosshairManager.App.csproj'
 
 try {
     if (Test-Path -LiteralPath $out) { Remove-Item -LiteralPath $out -Recurse -Force }
-    & dotnet publish $proj -p:PublishProfile=win-x64 -p:DebugType=embedded -p:PublishDir="$out\" -nologo
+    $publishArgs = @('publish', $proj, '-p:PublishProfile=win-x64', '-p:DebugType=embedded', "-p:PublishDir=$out\", '-nologo')
+    if ($Version) { $publishArgs += "-p:Version=$Version" }
+    & dotnet @publishArgs
     if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE" }
 
     $exe = Join-Path $out 'CrosshairManager.exe'

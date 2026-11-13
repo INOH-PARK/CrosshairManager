@@ -26,7 +26,7 @@ Advanced tab with the language picker:
 
 ## Usage
 
-1. Run `CrosshairManager.exe`. The first run shows a notice dialog. Read it and accept.
+1. Download `CrosshairManager-<version>-win-x64.exe` from [Releases](https://github.com/INOH-PARK/CrosshairManager/releases) and run it. The first run shows a notice dialog. Read it and accept.
 2. Double-click the tray icon, or right-click it and choose "Open settings", to open settings. Pick a preset or change values and the overlay updates right away.
 3. Run your game in **borderless** windowed mode (or windowed).
 4. To quit, choose Exit from the tray menu.
@@ -91,6 +91,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1
 - `verify.ps1` builds, then runs the Core, Desktop and Ui tests. It fails if any test fails or is skipped. Close CrosshairManager before running it.
 - `perf-check.ps1` measures idle CPU and memory. Use `-Exe` to point it at a specific exe.
 - `publish.ps1` produces the single file `artifacts\publish\CrosshairManager.exe` and prints its size.
+- `publish.ps1 -Version 1.2.3` stamps that version into the exe.
+
+### CI and releases
+
+- Every push to `main` and every pull request runs a GitHub Actions build plus the window-free tests (Core, the Desktop App and CLI tests, localization key parity). Screen tests need a real desktop, so they run only locally through `verify.ps1`.
+- Pushing a tag like `v1.2.3` runs the same tests and creates a GitHub Release with the exe and its SHA-256 file attached.
+
+```
+git tag v1.2.3
+git push origin v1.2.3
+```
 
 ## License
 

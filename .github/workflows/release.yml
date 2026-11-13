@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        shell: powershell
+        run: dotnet build CrosshairManager.sln -c Debug
+
+      - name: Window-free tests
+        shell: powershell
+        run: |
+          dotnet test tests/CrosshairManager.Core.Tests -c Debug --no-build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test tests/CrosshairManager.Desktop.Tests -c Debug --no-build --filter "FullyQualifiedName~CrosshairManager.Desktop.Tests.App.|FullyQualifiedName~CrosshairManager.Desktop.Tests.Cli.CliTests"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test tests/CrosshairManager.Ui.Tests -c Debug --no-build --filter "FullyQualifiedName~LocalizationTests.l1_"
+          exit $LASTEXITCODE
+
+      - name: Publish single-file exe
+        shell: powershell
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish.ps1 -Version $version
+          exit $LASTEXITCODE
+
+      - name: Package
+        id: package
+        shell: powershell
+        run: |
+          $name = 'CrosshairManager-${{ github.ref_name }}-win-x64.exe'
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item artifacts\publish\CrosshairManager.exe "release\$name"
+          $hash = (Get-FileHash "release\$name" -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content -Path "release\$name.sha256" -Value "$hash  $name" -Encoding ascii
+          "name=$name" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding ascii
+
+      - name: Create GitHub release
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $name = '${{ steps.package.outputs.name }}'
+          gh release create '${{ github.ref_name }}' "release\$name" "release\$name.sha256" --title '${{ github.ref_name }}' --generate-notes --verify-tag
+          exit $LASTEXITCODE
