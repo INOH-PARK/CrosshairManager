@@ -190,6 +190,8 @@ public sealed class AppShell : IAppShell, IDisposable
         return true;
     }
 
+    public void LogError(string message, Exception exception) => _log.Error(message, exception);
+
     public void Exit()
     {
         _log.Info("exit requested");

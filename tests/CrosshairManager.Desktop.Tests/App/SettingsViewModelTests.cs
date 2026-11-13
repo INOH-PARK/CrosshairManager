@@ -334,6 +334,19 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
+    public void MonitorEnumerationFailure_IsLogged_AndOnlyPrimaryIsListed()
+    {
+        var failure = new System.ComponentModel.Win32Exception(5);
+        _monitors.Failure = failure;
+        _monitors.Raise();
+
+        var option = Assert.Single(_vm.MonitorOptions);
+        Assert.Equal(MonitorSelection.Primary, option.Selection);
+        var logged = Assert.Single(_shell.Logged);
+        Assert.Same(failure, logged.Exception);
+    }
+
+    [Fact]
     public void General_Language_StartWithWindows_OverlayVisible_RoundTrip()
     {
         var language = _vm.Language;

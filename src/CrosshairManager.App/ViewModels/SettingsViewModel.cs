@@ -786,8 +786,9 @@ public sealed partial class SettingsViewModel : ObservableObject, INotifyDataErr
         {
             monitors = _monitors.GetMonitors();
         }
-        catch (Win32Exception)
+        catch (Win32Exception ex)
         {
+            _shell.LogError("monitor enumeration failed; listing only the primary monitor", ex);
             monitors = [];
         }
 

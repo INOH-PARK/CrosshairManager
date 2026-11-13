@@ -59,5 +59,8 @@ public interface IAppShell
     /// <summary>Writes or removes the HKCU Run value and saves startWithWindows. False when the registry write failed.</summary>
     bool SetStartWithWindows(bool enabled);
 
+    /// <summary>Writes an error line to the app log (a recovered failure the UI fell back from).</summary>
+    void LogError(string message, Exception exception);
+
     void Exit();
 }

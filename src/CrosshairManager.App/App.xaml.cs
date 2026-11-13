@@ -38,7 +38,7 @@ public partial class App : Application
         }
 
         _log = new FileLog(args.DataDir);
-        _instance = SingleInstance.TryAcquire(args.DataDir, out var pidWriteError);
+        _instance = SingleInstance.TryAcquire(args.DataDir, _log, out var pidWriteError);
         if (_instance is null)
         {
             // Another instance owns this data folder; it was signaled to open its settings window.
