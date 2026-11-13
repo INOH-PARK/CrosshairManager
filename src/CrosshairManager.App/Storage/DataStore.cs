@@ -63,7 +63,7 @@ public sealed class DataStore(string dataDir, FileLog log, TimeProvider? time = 
         {
             case SettingsLoadStatus.RecoveredFromCorrupt corrupt:
                 log.Info("settings.json was corrupt; moved to " + corrupt.BackupPath);
-                _messages.Add(new PendingMessage("Settings.RecoveredFromCorrupt", corrupt.BackupPath));
+                _messages.Add(new PendingMessage("InfoBar.SettingsRecovered", corrupt.BackupPath));
                 break;
             case SettingsLoadStatus.NewerVersion newer:
                 log.Info("settings.json has newer schema version " + newer.Version + "; using defaults in memory");

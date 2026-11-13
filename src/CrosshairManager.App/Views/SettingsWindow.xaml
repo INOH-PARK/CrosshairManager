@@ -1,0 +1,18 @@
+<Window x:Class="CrosshairManager.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:CrosshairManager.App.Views"
+        AutomationProperties.AutomationId="SettingsWindow"
+        Title="{v:Str Window.Title}"
+        Width="900"
+        Height="620"
+        MinWidth="900"
+        MinHeight="620"
+        FontFamily="{StaticResource FontBody}"
+        FontSize="{StaticResource TextBody}"
+        Background="{StaticResource BrushSurface}"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+  <v:SettingsView x:Name="View" />
+</Window>

@@ -100,3 +100,15 @@ Core <- Platform <- App; Cli -> Core + Platform; TestSupport -> Core + Platform;
   - `verify-overlay [--data-dir <dir>] [--preset <id>] [--monitor <device>] [--expect-hidden] [--timeout <s> (5)] [--out <dir>]` -> 데이터 폴더의 설정(또는 플래그)에서 활성 프리셋과 모니터를 읽고 예상 창 위치를 계산, todo 11에서 만든 Platform `Capture/Backdrop`으로 #FF00FF 배경창을 위치 + 8 px로 띄우고 Must have 포그라운드 가져오기 규칙으로 앞에 놓은 뒤 `WindowAt(P)`가 배경창인지 확인, Eventually 방식으로 캡처해 배경 위 Core 렌더 합성과 비교(정확 일치; 45도 회전은 허용 오차 2), `--expect-hidden`이면 배경색만인지 비교; 예상/실제 PNG를 `--out`에 저장; 일치 exit 0, 불일치 1, 사용법 오류 2
   - `ico <out.ico>`(builtin.default를 16/32/48 투명 캔버스에 맞춰 그리고 32bpp BMP/DIB 항목으로 ICO 작성)
   사용법 오류는 사용법 문구와 exit 2(validate의 BROKEN도 exit 2를 쓰되 `BROKEN:`을 출력).
+
+## todo 16에서 내린 결정 (설정 창)
+
+- **InfoBar 키**: 손상된 settings.json 복구 메시지 키는 `InfoBar.SettingsRecovered`다(todo 15의 `Settings.RecoveredFromCorrupt`를 이 이름으로 바꿈). `InfoBar` 요소(UIA StatusBar)의 Name은 현재 메시지의 Loc 문구이고, 메시지가 없으면 `InfoBar.Fullscreen` 안내 문구다. 메시지 줄은 AutomationId `InfoBarMessage`, 세부 줄은 `InfoBarDetail`, 전체화면 안내 줄은 `InfoBarNotice`, 닫기 버튼은 `InfoBarDismiss`.
+- **추가 AutomationId**: 설정 창 `SettingsWindow`; 프리셋 목록 행 `Preset.<presetId>`(Name = 표시 이름); 간단 탭 내장 프리셋 타일 `Tile.<presetId>`; 이름 변경 대화상자 `RenameDialog`(+ `RenameCancel`); 삭제 확인 대화상자 `ConfirmDeleteDialog`.
+- **ColorHex / OutlineColorHex**: 잘못된 값이면 바인딩 검증 오류(INotifyDataErrorInfo)가 표시되고 UIA `ItemStatus`가 `invalid`(정상이면 `valid`), `HelpText`가 `Color.Invalid`의 Loc 문구다. 잘못된 값은 오버레이에 적용되지 않고 저장되지도 않는다.
+- **숫자 입력**: `NumberField`(UIA Group) 안의 TextBox가 AutomationId를 가진다. 입력값은 그대로 두고 미리보기/오버레이/저장 시 `Normalize`로 잘라 내며, 잘린 값은 저장 뒤 필드에 다시 반영된다(미리보기 아래 `Editor.Clamped` 경고).
+- **LinkLines**는 Length/Thickness/Gap만 네 선에 복사한다(Enabled는 선별 유지, TStyle과 공존). TStyle 체크 = `Top.Enabled == false`.
+- **자동 저장**: 사용자 프리셋 편집은 400 ms(`SettingsViewModel.AutosaveDelay`) 뒤 저장, 프리셋 전환/창 숨김/종료 시 즉시 저장. 내장 프리셋의 첫 편집은 편집된 값으로 `Loc.Format("Preset.CopyName", 내장 이름)` 사본을 만들고 그것을 활성화한다.
+- **창 위치**: `settingsWindowPlacement`는 물리 픽셀이다. 숨길 때 저장하고, 다시 열 때 중심점이 속한 모니터의 작업 영역 안으로 보정한 뒤 그 모니터의 DPI로 DIP에 변환한다.
+- **공유 코드 복사**는 내장 프리셋을 현지화된 이름으로 인코딩한다. 붙여넣기 오류는 `ShareCode.Error.*`의 Loc 값이 `ShareCodeError`에 표시된다.
+- **UIA 트리**: Owner가 있는 대화상자(DisclaimerDialog, RenameDialog, ConfirmDeleteDialog)는 바탕 화면이 아니라 소유 창(SettingsWindow)의 자식으로 나타난다. Ui.Tests의 `AppFixture.FindTopLevel`은 두 곳을 모두 찾는다.

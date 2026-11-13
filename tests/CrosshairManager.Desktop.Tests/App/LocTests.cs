@@ -15,7 +15,7 @@ public class LocTests
     [
         "Tray.OpenSettings", "Tray.ToggleOverlay", "Tray.Presets", "Tray.Exit",
         "Error.DataDirReadOnly", "Error.InvalidArguments", "Error.StartupFailed", "Error.Unhandled", "Error.AutoStartFailed",
-        "Settings.RecoveredFromCorrupt", "Settings.NewerVersion", "Settings.LoadFailed", "Settings.Warning",
+        "InfoBar.SettingsRecovered", "Settings.NewerVersion", "Settings.LoadFailed", "Settings.Warning",
         "Presets.LoadFailed", "Hotkey.RegistrationFailed",
     ];
 

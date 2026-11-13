@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Threading;
 using CrosshairManager.App.Localization;
 using CrosshairManager.App.Logging;
+using CrosshairManager.App.Views;
 
 namespace CrosshairManager.App;
 
@@ -12,6 +13,7 @@ public partial class App : Application
     private FileLog? _log;
     private SingleInstance? _instance;
     private AppShell? _shell;
+    private SettingsWindow? _settingsWindow;
 
     /// <summary>The running shell for the settings UI (todo 16); null before startup finished.</summary>
     public IAppShell? Shell => _shell;
@@ -47,6 +49,7 @@ public partial class App : Application
         try
         {
             _shell = new AppShell(args, Dispatcher, _log, ExitApplication);
+            _shell.SettingsRequested += (_, _) => ShowSettings();
             _shell.Start(pidWriteError);
             _instance.Listen(() => Dispatcher.BeginInvoke(() => _shell?.OpenSettings()));
         }
@@ -72,8 +75,23 @@ public partial class App : Application
         Shutdown(exitCode);
     }
 
+    /// <summary>Creates the settings window on first request, then shows and activates it (tray, hotkey, second launch, first run).</summary>
+    private void ShowSettings()
+    {
+        if (_shell is null)
+        {
+            return;
+        }
+
+        _settingsWindow ??= new SettingsWindow(_shell);
+        _settingsWindow.ShowAndActivate();
+    }
+
     private void Cleanup()
     {
+        var window = _settingsWindow;
+        _settingsWindow = null;
+        window?.PrepareForExit();
         var shell = _shell;
         _shell = null;
         shell?.Dispose();

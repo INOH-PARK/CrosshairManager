@@ -1,0 +1,371 @@
+<UserControl x:Class="CrosshairManager.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:CrosshairManager.App.Views"
+             xmlns:c="clr-namespace:CrosshairManager.App.Controls"
+             FontFamily="{StaticResource FontBody}"
+             FontSize="{StaticResource TextBody}"
+             Background="{StaticResource BrushSurface}"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True">
+  <UserControl.Resources>
+    <v:RgbToBrushConverter x:Key="RgbToBrush" />
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+  </UserControl.Resources>
+  <Grid Margin="{StaticResource Pad2}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="{StaticResource PresetsColumn}" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="{StaticResource PreviewColumn}" />
+      </Grid.ColumnDefinitions>
+
+      <!-- ===== Presets pane ===== -->
+      <Grid Grid.Column="0" Margin="{StaticResource GapRight2}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Presets.Header}" />
+        <ListBox Grid.Row="1"
+                 AutomationProperties.AutomationId="PresetList"
+                 ItemsSource="{Binding Presets.Items}"
+                 SelectedItem="{Binding Presets.SelectedItem, Mode=TwoWay}"
+                 HorizontalContentAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Background="{StaticResource BrushSurfaceRaised}"
+                 BorderBrush="{StaticResource BrushBorder}"
+                 Margin="{StaticResource GapBelow2}">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="AutomationProperties.AutomationId" Value="{Binding RowAutomationId}" />
+              <Setter Property="AutomationProperties.Name" Value="{Binding DisplayName}" />
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid Margin="{StaticResource Pad1}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <c:PreviewControl Grid.Column="0" Spec="{Binding Spec}" Zoom="2" Fit="True" Width="{StaticResource ThumbnailSize}" Height="{StaticResource ThumbnailSize}" />
+                <StackPanel Grid.Column="1" Margin="{StaticResource GapLeft2}" VerticalAlignment="Center">
+                  <TextBlock Style="{StaticResource TextBodyStyle}" TextTrimming="CharacterEllipsis" Text="{Binding DisplayName}" />
+                  <TextBlock Style="{StaticResource TextCaptionStyle}" Text="{Binding Status}" Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Row="2">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Button Grid.Row="0" Grid.Column="0" AutomationProperties.AutomationId="NewPreset" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellLeft}" Content="{v:Str Preset.New}" Command="{Binding Presets.NewCommand}" />
+          <Button Grid.Row="0" Grid.Column="1" AutomationProperties.AutomationId="DuplicatePreset" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellRight}" Content="{v:Str Preset.Duplicate}" Command="{Binding Presets.DuplicateCommand}" />
+          <Button Grid.Row="1" Grid.Column="0" AutomationProperties.AutomationId="RenamePreset" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellLeft}" Content="{v:Str Preset.Rename}" Command="{Binding Presets.RenameCommand}" />
+          <Button Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="DeletePreset" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellRight}" Content="{v:Str Preset.Delete}" Command="{Binding Presets.DeleteCommand}" />
+          <Button Grid.Row="2" Grid.Column="0" AutomationProperties.AutomationId="ImportPresetFile" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellLeft}" Content="{v:Str Preset.Import}" Command="{Binding Presets.ImportPresetFileCommand}" />
+          <Button Grid.Row="2" Grid.Column="1" AutomationProperties.AutomationId="ExportPresetFile" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource CellRight}" Content="{v:Str Preset.Export}" Command="{Binding Presets.ExportPresetFileCommand}" />
+        </Grid>
+        <Grid Grid.Row="3" Margin="{StaticResource GapAbove1}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Button Grid.Row="0" Grid.ColumnSpan="2" AutomationProperties.AutomationId="CopyShareCode" Style="{StaticResource ToolButtonStyle}" Margin="{StaticResource GapBelow1}" Content="{v:Str ShareCode.Copy}" Command="{Binding Presets.CopyShareCodeCommand}" />
+          <TextBox Grid.Row="1" Grid.Column="0"
+                   AutomationProperties.AutomationId="ShareCodeInput"
+                   Style="{StaticResource CompactTextBoxStyle}"
+                   Margin="{StaticResource GapRight1}"
+                   ToolTip="{v:Str ShareCode.Placeholder}"
+                   Text="{Binding Presets.ShareCodeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+          <Button Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="PasteShareCode" Style="{StaticResource ToolButtonStyle}" Content="{v:Str ShareCode.Paste}" Command="{Binding Presets.PasteShareCodeCommand}" />
+          <TextBlock Grid.Row="2" Grid.ColumnSpan="2"
+                     AutomationProperties.AutomationId="ShareCodeError"
+                     Style="{StaticResource ErrorTextStyle}"
+                     Margin="{StaticResource GapAbove1}"
+                     Text="{Binding Presets.ShareCodeError}"
+                     Visibility="{Binding Presets.HasShareCodeError, Converter={StaticResource BoolToVis}}" />
+        </Grid>
+      </Grid>
+
+      <!-- ===== Tabs ===== -->
+      <TabControl x:Name="Tabs" x:FieldModifier="public" Grid.Column="1"
+                  Background="{StaticResource BrushSurfaceRaised}"
+                  BorderBrush="{StaticResource BrushBorder}"
+                  Padding="{StaticResource Pad2}">
+        <TabItem AutomationProperties.AutomationId="TabSimple" Header="{v:Str Tab.Simple}">
+          <StackPanel>
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Simple.BuiltIns}" />
+            <ItemsControl ItemsSource="{Binding Presets.BuiltIns}" Margin="{StaticResource GapBelow3}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Style="{StaticResource TileButtonStyle}"
+                          Width="{StaticResource TileWidth}"
+                          AutomationProperties.AutomationId="{Binding TileAutomationId}"
+                          AutomationProperties.Name="{Binding DisplayName}"
+                          Command="{Binding DataContext.SelectPresetCommand, RelativeSource={RelativeSource AncestorType={x:Type v:SettingsView}}}"
+                          CommandParameter="{Binding}">
+                    <StackPanel>
+                      <c:PreviewControl Spec="{Binding Spec}" Zoom="2" Fit="True" Width="{StaticResource ThumbnailSize}" Height="{StaticResource ThumbnailSize}" HorizontalAlignment="Center" />
+                      <TextBlock Style="{StaticResource TextCaptionStyle}" Margin="{StaticResource GapAbove1}" TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding DisplayName}" />
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Simple.Swatches}" />
+            <ItemsControl ItemsSource="{Binding Swatches}" Margin="{StaticResource GapBelow3}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Style="{StaticResource SwatchButtonStyle}"
+                          Background="{Binding Color, Converter={StaticResource RgbToBrush}}"
+                          AutomationProperties.AutomationId="{Binding AutomationId}"
+                          AutomationProperties.Name="{Binding Hex}"
+                          ToolTip="{Binding Hex}"
+                          Command="{Binding DataContext.SelectSwatchCommand, RelativeSource={RelativeSource AncestorType={x:Type v:SettingsView}}}"
+                          CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <c:NumberField FieldId="SimpleScale" Label="{v:Str Simple.Scale}" Minimum="25" Maximum="400" Value="{Binding ScalePercent, Mode=TwoWay}" Margin="{StaticResource GapBelow2}" />
+            <c:NumberField FieldId="SimpleOpacity" Label="{v:Str Simple.Opacity}" Minimum="0" Maximum="100" Value="{Binding Opacity, Mode=TwoWay}" Margin="{StaticResource GapBelow2}" />
+            <CheckBox AutomationProperties.AutomationId="SimpleOutline" Style="{StaticResource CompactCheckBoxStyle}" Content="{v:Str Simple.Outline}" IsChecked="{Binding OutlineEnabled, Mode=TwoWay}" />
+          </StackPanel>
+        </TabItem>
+
+        <TabItem AutomationProperties.AutomationId="TabAdvanced" Header="{v:Str Tab.Advanced}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Lines -->
+            <StackPanel Grid.Row="0" Margin="{StaticResource GapBelow2}">
+              <DockPanel Margin="{StaticResource GapBelow1}">
+                <CheckBox DockPanel.Dock="Right" AutomationProperties.AutomationId="TStyle" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapLeft2}" Content="{v:Str Lines.TStyle}" IsChecked="{Binding TStyle, Mode=TwoWay}" />
+                <CheckBox DockPanel.Dock="Right" AutomationProperties.AutomationId="LinkLines" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapLeft2}" Content="{v:Str Lines.Link}" IsChecked="{Binding LinkLines, Mode=TwoWay}" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Margin="{StaticResource NoGap}" Text="{v:Str Group.Lines}" />
+              </DockPanel>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="{StaticResource LineNameColumn}" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource TextCaptionStyle}" Margin="{StaticResource GapBelowHalf}" Text="{v:Str Line.Length}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource TextCaptionStyle}" Margin="{StaticResource GapBelowHalf}" Text="{v:Str Line.Thickness}" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource TextCaptionStyle}" Margin="{StaticResource GapBelowHalf}" Text="{v:Str Line.Gap}" />
+          <CheckBox Grid.Row="1" Grid.Column="0" AutomationProperties.AutomationId="Top.Enabled" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapBelowHalf}" Content="{v:Str Line.Top}" IsChecked="{Binding Top.Enabled, Mode=TwoWay}" />
+          <c:NumberField Grid.Row="1" Grid.Column="1" FieldId="Top.Length" Minimum="0" Maximum="512" Value="{Binding Top.Length, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="1" Grid.Column="2" FieldId="Top.Thickness" Minimum="1" Maximum="64" Value="{Binding Top.Thickness, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="1" Grid.Column="3" FieldId="Top.Gap" Minimum="-32" Maximum="256" Value="{Binding Top.Gap, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+          <CheckBox Grid.Row="2" Grid.Column="0" AutomationProperties.AutomationId="Bottom.Enabled" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapBelowHalf}" Content="{v:Str Line.Bottom}" IsChecked="{Binding Bottom.Enabled, Mode=TwoWay}" />
+          <c:NumberField Grid.Row="2" Grid.Column="1" FieldId="Bottom.Length" Minimum="0" Maximum="512" Value="{Binding Bottom.Length, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="2" Grid.Column="2" FieldId="Bottom.Thickness" Minimum="1" Maximum="64" Value="{Binding Bottom.Thickness, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="2" Grid.Column="3" FieldId="Bottom.Gap" Minimum="-32" Maximum="256" Value="{Binding Bottom.Gap, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+          <CheckBox Grid.Row="3" Grid.Column="0" AutomationProperties.AutomationId="Left.Enabled" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapBelowHalf}" Content="{v:Str Line.Left}" IsChecked="{Binding Left.Enabled, Mode=TwoWay}" />
+          <c:NumberField Grid.Row="3" Grid.Column="1" FieldId="Left.Length" Minimum="0" Maximum="512" Value="{Binding Left.Length, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="3" Grid.Column="2" FieldId="Left.Thickness" Minimum="1" Maximum="64" Value="{Binding Left.Thickness, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="3" Grid.Column="3" FieldId="Left.Gap" Minimum="-32" Maximum="256" Value="{Binding Left.Gap, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+          <CheckBox Grid.Row="4" Grid.Column="0" AutomationProperties.AutomationId="Right.Enabled" Style="{StaticResource CompactCheckBoxStyle}" Margin="{StaticResource GapBelowHalf}" Content="{v:Str Line.Right}" IsChecked="{Binding Right.Enabled, Mode=TwoWay}" />
+          <c:NumberField Grid.Row="4" Grid.Column="1" FieldId="Right.Length" Minimum="0" Maximum="512" Value="{Binding Right.Length, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="4" Grid.Column="2" FieldId="Right.Thickness" Minimum="1" Maximum="64" Value="{Binding Right.Thickness, Mode=TwoWay}" Margin="{StaticResource CellGap}" />
+          <c:NumberField Grid.Row="4" Grid.Column="3" FieldId="Right.Gap" Minimum="-32" Maximum="256" Value="{Binding Right.Gap, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+              </Grid>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+
+              <!-- Color + Dot -->
+              <StackPanel Grid.Column="0" Margin="{StaticResource ColumnGap}">
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Color}" />
+            <Grid Margin="{StaticResource GapBelowHalf}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource FieldLabelColumn}" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Style="{StaticResource TextCaptionStyle}" TextTrimming="CharacterEllipsis" Text="{v:Str Color.Hex}" />
+              <TextBox Grid.Column="1"
+                       AutomationProperties.AutomationId="ColorHex"
+                       AutomationProperties.ItemStatus="{Binding ColorHexStatus}"
+                       AutomationProperties.HelpText="{Binding ColorHexHelp}"
+                       Style="{StaticResource CompactTextBoxStyle}"
+                       Text="{Binding ColorHex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+            </Grid>
+                <c:NumberField FieldId="ColorR" Label="{v:Str Color.R}" Minimum="0" Maximum="255" Value="{Binding ColorR, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+                <c:NumberField FieldId="ColorG" Label="{v:Str Color.G}" Minimum="0" Maximum="255" Value="{Binding ColorG, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+                <c:NumberField FieldId="ColorB" Label="{v:Str Color.B}" Minimum="0" Maximum="255" Value="{Binding ColorB, Mode=TwoWay}" Margin="{StaticResource GapBelow2}" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Dot}" />
+                <CheckBox AutomationProperties.AutomationId="DotEnabled" Style="{StaticResource CompactCheckBoxStyle}" Content="{v:Str Dot.Enabled}" IsChecked="{Binding DotEnabled, Mode=TwoWay}" />
+                <c:NumberField FieldId="DotSize" Label="{v:Str Dot.Size}" Minimum="1" Maximum="64" Value="{Binding DotSize, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+                <c:NumberField FieldId="DotOpacity" Label="{v:Str Dot.Opacity}" Minimum="0" Maximum="100" Value="{Binding DotOpacity, Mode=TwoWay}" />
+              </StackPanel>
+
+              <!-- Outline + Transform + Display -->
+              <StackPanel Grid.Column="1" Margin="{StaticResource ColumnGap}">
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Outline}" />
+                <CheckBox AutomationProperties.AutomationId="OutlineEnabled" Style="{StaticResource CompactCheckBoxStyle}" Content="{v:Str Outline.Enabled}" IsChecked="{Binding OutlineEnabled, Mode=TwoWay}" />
+                <c:NumberField FieldId="OutlineThickness" Label="{v:Str Outline.Thickness}" Minimum="1" Maximum="16" Value="{Binding OutlineThickness, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+            <Grid Margin="{StaticResource GapBelowHalf}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource FieldLabelColumn}" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Style="{StaticResource TextCaptionStyle}" TextTrimming="CharacterEllipsis" Text="{v:Str Outline.Color}" />
+              <TextBox Grid.Column="1"
+                       AutomationProperties.AutomationId="OutlineColorHex"
+                       AutomationProperties.ItemStatus="{Binding OutlineColorHexStatus}"
+                       AutomationProperties.HelpText="{Binding OutlineColorHexHelp}"
+                       Style="{StaticResource CompactTextBoxStyle}"
+                       Text="{Binding OutlineColorHex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+            </Grid>
+                <c:NumberField FieldId="OutlineOpacity" Label="{v:Str Outline.Opacity}" Minimum="0" Maximum="100" Value="{Binding OutlineOpacity, Mode=TwoWay}" Margin="{StaticResource GapBelow2}" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Transform}" />
+                <c:NumberField FieldId="Opacity" Label="{v:Str Transform.Opacity}" Minimum="0" Maximum="100" Value="{Binding Opacity, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+                <c:NumberField FieldId="Scale" Label="{v:Str Transform.Scale}" Minimum="25" Maximum="400" Value="{Binding ScalePercent, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+            <Grid Margin="{StaticResource GapBelowHalf}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource FieldLabelColumn}" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Style="{StaticResource TextCaptionStyle}" TextTrimming="CharacterEllipsis" Text="{v:Str Transform.Rotation}" />
+              <ComboBox Grid.Column="1"
+                        AutomationProperties.AutomationId="Rotation"
+                        Style="{StaticResource CompactComboBoxStyle}"
+                        ItemsSource="{Binding RotationChoices}"
+                        SelectedItem="{Binding Rotation, Mode=TwoWay}" />
+            </Grid>
+                <c:NumberField FieldId="OffsetX" Label="{v:Str Transform.OffsetX}" Minimum="-4096" Maximum="4096" Value="{Binding OffsetX, Mode=TwoWay}" Margin="{StaticResource GapBelowHalf}" />
+                <c:NumberField FieldId="OffsetY" Label="{v:Str Transform.OffsetY}" Minimum="-4096" Maximum="4096" Value="{Binding OffsetY, Mode=TwoWay}" Margin="{StaticResource GapBelow2}" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Display}" />
+                <StackPanel Margin="{StaticResource GapBelowHalf}">
+                  <TextBlock Style="{StaticResource TextCaptionStyle}" Text="{v:Str Monitor.Label}" />
+                  <ComboBox AutomationProperties.AutomationId="MonitorSelect"
+                            Style="{StaticResource CompactComboBoxStyle}"
+                            ItemsSource="{Binding MonitorOptions}"
+                            DisplayMemberPath="Label"
+                            ToolTip="{Binding SelectedMonitor.Label}"
+                            SelectedItem="{Binding SelectedMonitor, Mode=TwoWay}" />
+                </StackPanel>
+                <TextBlock AutomationProperties.AutomationId="MonitorWarning"
+                           Style="{StaticResource WarningTextStyle}"
+                           Text="{v:Str Monitor.Warning}"
+                           Visibility="{Binding MonitorFellBack, Converter={StaticResource BoolToVis}}" />
+              </StackPanel>
+
+              <!-- Hotkeys + General -->
+              <StackPanel Grid.Column="2">
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Group.Hotkeys}" />
+                <ItemsControl ItemsSource="{Binding Hotkeys}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Margin="{StaticResource GapBelowHalf}">
+                        <TextBlock Style="{StaticResource TextCaptionStyle}" TextTrimming="CharacterEllipsis" Text="{Binding Label}" />
+                        <c:HotkeyBox Style="{StaticResource HotkeyBoxStyle}"
+                                     AutomationProperties.AutomationId="{Binding AutomationId}"
+                                     AutomationProperties.Name="{Binding Label}"
+                                     EmptyText="{v:Str Hotkey.None}"
+                                     IsFailed="{Binding IsFailed}"
+                                     Gesture="{Binding Gesture, Mode=TwoWay}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock AutomationProperties.AutomationId="HotkeyError"
+                           Style="{StaticResource ErrorTextStyle}"
+                           Margin="{StaticResource GapBelow2}"
+                           Text="{v:Str Hotkey.Error}"
+                           Visibility="{Binding HasHotkeyError, Converter={StaticResource BoolToVis}}" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Margin="{StaticResource GapAbove1}" Text="{v:Str Group.General}" />
+                <StackPanel Margin="{StaticResource GapBelowHalf}">
+                  <TextBlock Style="{StaticResource TextCaptionStyle}" Text="{v:Str Language.Label}" />
+                  <ComboBox AutomationProperties.AutomationId="Language"
+                            Style="{StaticResource CompactComboBoxStyle}"
+                            SelectedValuePath="Tag"
+                            SelectedValue="{Binding Language, Mode=TwoWay}">
+                    <ComboBoxItem Tag="system" Content="{v:Str Language.System}" />
+                    <ComboBoxItem Tag="ko" Content="{v:Str Language.Korean}" />
+                    <ComboBoxItem Tag="en" Content="{v:Str Language.English}" />
+                  </ComboBox>
+                </StackPanel>
+                <CheckBox AutomationProperties.AutomationId="StartWithWindows" Style="{StaticResource CompactCheckBoxStyle}" Content="{v:Str StartWithWindows}" IsChecked="{Binding StartWithWindows, Mode=TwoWay}" />
+                <CheckBox AutomationProperties.AutomationId="OverlayVisible" Style="{StaticResource CompactCheckBoxStyle}" Content="{v:Str OverlayVisible}" IsChecked="{Binding OverlayVisible, Mode=TwoWay}" />
+              </StackPanel>
+            </Grid>
+          </Grid>
+        </TabItem>
+      </TabControl>
+
+      <!-- ===== Preview ===== -->
+      <StackPanel Grid.Column="2" Margin="{StaticResource GapLeft2}">
+        <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{v:Str Preview.Header}" />
+        <c:PreviewControl x:Name="Preview" x:FieldModifier="public"
+                          Spec="{Binding PreviewSpec}"
+                          Zoom="8"
+                          PreviewAutomationId="Preview"
+                          Width="{StaticResource PreviewSize}"
+                          Height="{StaticResource PreviewSize}"
+                          HorizontalAlignment="Left" />
+        <TextBlock Style="{StaticResource WarningTextStyle}"
+                   Margin="{StaticResource GapAbove1}"
+                   Text="{Binding ClampWarning}"
+                   Visibility="{Binding HasClampWarning, Converter={StaticResource BoolToVis}}" />
+      </StackPanel>
+    </Grid>
+
+    <!-- ===== InfoBar ===== -->
+    <c:InfoBar Grid.Row="1"
+               Margin="{StaticResource GapAbove2}"
+               Notice="{v:Str InfoBar.Fullscreen}"
+               DismissLabel="{v:Str InfoBar.Dismiss}"
+               Text="{Binding InfoBarText}"
+               Message="{Binding CurrentMessage.Text}"
+               Detail="{Binding CurrentMessage.Detail}"
+               HasMessage="{Binding HasMessage}"
+               DismissCommand="{Binding DismissCommand}" />
+  </Grid>
+</UserControl>

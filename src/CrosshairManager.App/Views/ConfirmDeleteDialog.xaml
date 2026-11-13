@@ -1,0 +1,32 @@
+<Window x:Class="CrosshairManager.App.Views.ConfirmDeleteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:CrosshairManager.App.Views"
+        AutomationProperties.AutomationId="ConfirmDeleteDialog"
+        Title="{v:Str Preset.DeleteTitle}"
+        FontFamily="{StaticResource FontBody}"
+        FontSize="{StaticResource TextBody}"
+        Background="{StaticResource BrushSurface}"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Width="380">
+  <StackPanel Margin="{StaticResource Pad3}">
+    <TextBlock x:Name="Prompt" Style="{StaticResource TextBodyStyle}" TextWrapping="Wrap" Margin="{StaticResource GapBelow3}" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button AutomationProperties.AutomationId="ConfirmDeleteOk"
+              Style="{StaticResource PrimaryButtonStyle}"
+              Margin="{StaticResource GapRight2}"
+              IsDefault="True"
+              Content="{v:Str Preset.Delete}"
+              Click="OnOk" />
+      <Button AutomationProperties.AutomationId="ConfirmDeleteCancel"
+              Style="{StaticResource PrimaryButtonStyle}"
+              IsCancel="True"
+              Content="{v:Str Dialog.Cancel}" />
+    </StackPanel>
+  </StackPanel>
+</Window>
