@@ -205,7 +205,8 @@ public sealed class EndToEndTests(ITestOutputHelper output)
         AppFixture.SelectTab(window, "TabAdvanced", "HotkeyNext");
 
         var error = E2e.Element(window, "HotkeyError");
-        Assert.Equal(Resx.English("Hotkey.Error"), error.Name);
+        var expectedError = Resx.English("Hotkey.Error");
+        E2e.WaitUntil(() => error.Name == expectedError, $"HotkeyError is '{error.Name}', expected '{expectedError}'", AppFixture.UiTimeout);
         Assert.Equal(taken.ToString(), E2e.Element(window, "HotkeyNext").AsTextBox().Text);
         var message = E2e.Element(window, "InfoBarMessage");
         E2e.WaitUntil(() => message.Name == Resx.English("Hotkey.RegistrationFailed"), $"InfoBarMessage is '{message.Name}'", AppFixture.UiTimeout);
