@@ -236,6 +236,97 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
     }
 
+    /// <summary>
+    /// A message with a long detail makes the InfoBar taller and the tabs shorter. Every always-present control inside the
+    /// tabs must stay reachable at the minimum window size in both languages: drawn in full (nothing above it clips it
+    /// away), or inside a ScrollViewer that scrolls it into its viewport (BringIntoView, then drawn in full). Renders
+    /// TestResults/desktop/settings-view/tabs-{language}-{simple,advanced}-message.png with the lowest control scrolled into view.
+    /// </summary>
+    [Theory]
+    [InlineData("ko")]
+    [InlineData("en")]
+    public void TabControls_StayReachable_WhenTheInfoBarShowsALongMessage(string language)
+    {
+        var (problems, advancedIds) = WpfThread.Run(() =>
+        {
+            WpfThread.EnsureApplication();
+            var previous = Loc.Instance.Culture.Name;
+            Loc.Instance.SetLanguage(language);
+            try
+            {
+                using var dir = new AppTestDir();
+                var shell = new FakeAppShell(dir.Path);
+                using var vm = new SettingsViewModel(shell, new FakeDialogs(), new FakeMonitors(), new ManualDebounce());
+                var view = new SettingsView { DataContext = vm };
+                shell.Pending.Add(new PendingMessage("Settings.LoadFailed", LongDetail));
+                shell.Raise();
+                var outDir = Path.Combine(EndToEndHarness.RepositoryRoot(), "TestResults", "desktop", "settings-view");
+                Directory.CreateDirectory(outDir);
+                var wanted = AlwaysVisibleIds.ToHashSet(StringComparer.Ordinal);
+                var problems = new List<string>();
+                var advancedIds = new List<string>();
+                foreach (var (index, name) in new[] { (0, "simple"), (1, "advanced") })
+                {
+                    view.Tabs.SelectedIndex = index;
+                    Layout(view);
+                    var controls = Descendants(view.Tabs)
+                        .Where(e => IsShown(e, view) && wanted.Contains(AutomationProperties.GetAutomationId(e)))
+                        .Select(e => (Element: e, Rect: Bounds(e, view)))
+                        .ToList();
+                    var scrolled = 0;
+                    foreach (var (control, _) in controls)
+                    {
+                        var id = AutomationProperties.GetAutomationId(control);
+                        if (index == 1)
+                        {
+                            advancedIds.Add(id);
+                        }
+
+                        if (IsDrawnInFull(control, view))
+                        {
+                            continue;
+                        }
+
+                        var scroller = Ancestors(control, view.Tabs).OfType<ScrollViewer>().FirstOrDefault();
+                        if (scroller is null)
+                        {
+                            problems.Add($"[{language}/{name}] {id} {Bounds(control, view)} is clipped to {VisibleBounds(control, view)} and nothing scrolls it into view");
+                            continue;
+                        }
+
+                        scrolled++;
+                        control.BringIntoView(new Rect(0, 0, control.ActualWidth, control.ActualHeight));
+                        view.UpdateLayout();
+                        if (!IsDrawnInFull(control, view))
+                        {
+                            problems.Add($"[{language}/{name}] {id} {Bounds(control, view)} is still clipped to {VisibleBounds(control, view)} after BringIntoView (extent {scroller.ExtentHeight:0.#}, viewport {scroller.ViewportHeight:0.#}, offset {scroller.VerticalOffset:0.#})");
+                        }
+                    }
+
+                    var lowest = controls.MaxBy(c => c.Rect.Bottom).Element;
+                    lowest.BringIntoView(new Rect(0, 0, lowest.ActualWidth, lowest.ActualHeight));
+                    view.UpdateLayout();
+                    var viewer = Ancestors(lowest, view.Tabs).OfType<ScrollViewer>().FirstOrDefault();
+                    output.WriteLine($"[{language}/{name}] {controls.Count} controls, {scrolled} needed scrolling; tabs {Bounds(view.Tabs, view)}; " +
+                                     (viewer is null ? "no ScrollViewer" : $"ScrollViewer extent {viewer.ExtentHeight:0.#}, viewport {viewer.ViewportHeight:0.#}, scrollable {viewer.ScrollableHeight:0.#}, offset {viewer.VerticalOffset:0.#}"));
+                    var png = Path.Combine(outDir, $"tabs-{language}-{name}-message.png");
+                    Save(view, png);
+                    output.WriteLine("rendered " + png);
+                }
+
+                return (problems, advancedIds);
+            }
+            finally
+            {
+                Loc.Instance.SetLanguage(previous);
+            }
+        });
+
+        Assert.Contains("MonitorSelect", advancedIds);
+        Assert.Contains("Language", advancedIds);
+        Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems));
+    }
+
     private static void Layout(UIElement view)
     {
         view.Measure(new Size(ClientWidth, ClientHeight));
@@ -287,6 +378,38 @@ public sealed class SettingsViewLayoutTests(ITestOutputHelper output)
 
     private static Rect Bounds(FrameworkElement element, Visual root) =>
         element.TransformToAncestor(root).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+
+    /// <summary>
+    /// The part of the element that is actually drawn, in root coordinates: its bounds cut by every clip on it and its
+    /// ancestors (a layout-clipped element keeps its full ActualHeight, so ActualHeight alone cannot tell).
+    /// </summary>
+    private static Rect VisibleBounds(FrameworkElement element, Visual root)
+    {
+        var rect = Bounds(element, root);
+        for (DependencyObject? node = element; node is not null && node != root; node = VisualTreeHelper.GetParent(node))
+        {
+            if (node is Visual visual && VisualTreeHelper.GetClip(visual) is { } clip)
+            {
+                rect.Intersect(visual.TransformToAncestor(root).TransformBounds(clip.Bounds));
+            }
+        }
+
+        return rect;
+    }
+
+    private static bool IsDrawnInFull(FrameworkElement element, Visual root) => Inside(Bounds(element, root), VisibleBounds(element, root));
+
+    /// <summary>Rect containment with half a pixel of tolerance for layout rounding; an empty outer rect contains nothing.</summary>
+    private static bool Inside(Rect inner, Rect outer) =>
+        !outer.IsEmpty && inner.Left >= outer.Left - 0.5 && inner.Top >= outer.Top - 0.5 && inner.Right <= outer.Right + 0.5 && inner.Bottom <= outer.Bottom + 0.5;
+
+    private static IEnumerable<DependencyObject> Ancestors(DependencyObject element, DependencyObject stopAt)
+    {
+        for (var node = VisualTreeHelper.GetParent(element); node is not null && node != stopAt; node = VisualTreeHelper.GetParent(node))
+        {
+            yield return node;
+        }
+    }
 
     /// <summary>Approximates the UIA rule: leaf controls (TextBlock, TextBox, Button, CheckBox, ComboBox, Slider, Image) with the same visual parent must not intersect.</summary>
     private static IEnumerable<string> LeafSiblingOverlaps(SettingsView view, string tab)

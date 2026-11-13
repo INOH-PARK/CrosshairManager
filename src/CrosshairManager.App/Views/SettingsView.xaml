@@ -164,6 +164,8 @@
         </TabItem>
 
         <TabItem AutomationProperties.AutomationId="TabAdvanced" Header="{v:Str Tab.Advanced}">
+          <!-- A message + detail in the InfoBar shrinks the tabs; at the 620 px minimum this tab then scrolls instead of clipping its last rows. -->
+          <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
           <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
@@ -337,6 +339,7 @@
               </StackPanel>
             </Grid>
           </Grid>
+          </ScrollViewer>
         </TabItem>
       </TabControl>
 
