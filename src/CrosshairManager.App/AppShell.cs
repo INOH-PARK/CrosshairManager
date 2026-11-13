@@ -87,6 +87,7 @@ public sealed class AppShell : IAppShell, IDisposable
         _overlay.Initialize(PresetCycle.Resolve(_presets, _settings.ActivePresetId).Crosshair, _settings.Monitor, visible);
 
         _hotkeys = new GlobalHotkeys();
+        _hotkeys.HandlerFailed += ex => _log.Error("hotkey handler failed", ex);
         _hotkeys.Pressed += id => _dispatcher.BeginInvoke(() => OnHotkey(id));
         foreach (var id in HotkeyBindings.Ids)
         {
@@ -190,6 +191,8 @@ public sealed class AppShell : IAppShell, IDisposable
         return true;
     }
 
+    public void LogError(string message, Exception exception) => _log.Error(message, exception);
+
     public void Exit()
     {
         _log.Info("exit requested");
@@ -204,10 +207,10 @@ public sealed class AppShell : IAppShell, IDisposable
         }
 
         _disposed = true;
-        _tray?.Dispose();
-        _hotkeys?.Dispose();
-        _overlay?.Dispose();
-        _monitors?.Dispose();
+        Teardown.Step(_log, "tray", () => _tray?.Dispose());
+        Teardown.Step(_log, "hotkeys", () => _hotkeys?.Dispose());
+        Teardown.Step(_log, "overlay", () => _overlay?.Dispose());
+        Teardown.Step(_log, "monitors", () => _monitors?.Dispose());
         _log.Info("stopped");
     }
 

@@ -121,6 +121,10 @@ internal sealed class FakeAppShell : IAppShell
         return true;
     }
 
+    public List<(string Message, Exception Exception)> Logged { get; } = [];
+
+    public void LogError(string message, Exception exception) => Logged.Add((message, exception));
+
     public void Exit()
     {
     }
@@ -161,7 +165,9 @@ internal sealed class FakeMonitors : IMonitorCatalog
         new(@"\\.\DISPLAY1", new IntRect(1920, 0, 1920, 1080), new IntRect(1920, 0, 1920, 1032), false, 96, 96),
     ];
 
-    public IReadOnlyList<MonitorInfo> GetMonitors() => Monitors;
+    public Exception? Failure { get; set; }
+
+    public IReadOnlyList<MonitorInfo> GetMonitors() => Failure is null ? Monitors : throw Failure;
 
     public void Raise() => Changed?.Invoke(this, EventArgs.Empty);
 }

@@ -27,8 +27,8 @@ internal static class VerifyOverlayCommand
         var dataDir = DataDirectory.Resolve(Shared.DataDirArgs(o), env);
         var outDir = Path.GetFullPath(o.Value("--out") ?? "verify-out");
 
-        // Only read settings that exist; a missing file must not be created by a verifier.
-        var settings = File.Exists(Path.Combine(dataDir, "settings.json")) ? new SettingsStore(dataDir).Load().Settings : AppSettings.Default;
+        // A verifier never changes the data folder: missing, corrupt or newer settings read as defaults and stay as they are.
+        var settings = new SettingsStore(dataDir).Read();
         var preset = Shared.FromStore(o.Value("--preset") ?? settings.ActivePresetId, dataDir);
 
         using var service = new MonitorService();

@@ -1,5 +1,6 @@
 using CrosshairManager.Core.Settings;
 using CrosshairManager.Platform.Hotkeys;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using CrosshairManager.TestSupport;
@@ -63,6 +64,29 @@ public class GlobalHotkeysTests
         using var second = new GlobalHotkeys();
         Assert.True(second.TryRegister("b", Chord(), out var error), $"Win32 error {error}");
     }
+
+    [Fact]
+    public async Task Throwing_Pressed_handler_is_reported_through_HandlerFailed_and_the_thread_keeps_running()
+    {
+        using var hotkeys = new GlobalHotkeys();
+        Assert.True(hotkeys.TryRegister("test", Chord(), out var error), $"Win32 error {error}");
+        var boom = new InvalidOperationException("boom");
+        var reported = new TaskCompletionSource<Exception>(TaskCreationOptions.RunContinuationsAsynchronously);
+        hotkeys.Pressed += _ => throw boom;
+        hotkeys.HandlerFailed += ex => reported.TrySetResult(ex);
+
+        // The message-only window gets the WM_HOTKEY a press would produce (atom 1 = first registration); no input is sent.
+        Assert.True(PostMessage(hotkeys.WindowHandle, WmHotkey, 1, 0), $"PostMessage failed: {Marshal.GetLastWin32Error()}");
+
+        Assert.Same(boom, await reported.Task.WaitAsync(TimeSpan.FromSeconds(5)));
+        hotkeys.Unregister("test");
+    }
+
+    private const uint WmHotkey = 0x0312;
+
+    [DllImport("user32.dll", EntryPoint = "PostMessageW", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool PostMessage(nint hwnd, uint msg, nint wParam, nint lParam);
 
     /// <summary>
     /// Tiny foreground window so injected input is not swallowed by whatever (possibly elevated) app has focus.

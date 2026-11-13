@@ -8,6 +8,9 @@
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.15" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="CrosshairManager.Desktop.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\CrosshairManager.Core\CrosshairManager.Core.csproj" />
   </ItemGroup>
 </Project>

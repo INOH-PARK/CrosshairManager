@@ -97,7 +97,7 @@ Core <- Platform <- App; Cli -> Core + Platform; TestSupport -> Core + Platform;
   - `validate <jsonPath>` -> `OK`/경고 출력 후 exit 0, `BROKEN: <reason>` exit 2, `NEWER: <v>` exit 3
   - `capture <out.png> [--monitor <device>] [--size N (64)]`(중앙 영역)
   - `compare <expected.png> <actual.png> [--tolerance N (0)]` -> 허용 오차 안이면 exit 0, 다르면 1(개수와 첫 차이 출력)
-  - `verify-overlay [--data-dir <dir>] [--preset <id>] [--monitor <device>] [--expect-hidden] [--timeout <s> (5)] [--out <dir>]` -> 데이터 폴더의 설정(또는 플래그)에서 활성 프리셋과 모니터를 읽고 예상 창 위치를 계산, todo 11에서 만든 Platform `Capture/Backdrop`으로 #FF00FF 배경창을 위치 + 8 px로 띄우고 Must have 포그라운드 가져오기 규칙으로 앞에 놓은 뒤 `WindowAt(P)`가 배경창인지 확인, Eventually 방식으로 캡처해 배경 위 Core 렌더 합성과 비교(정확 일치; 45도 회전은 허용 오차 2), `--expect-hidden`이면 배경색만인지 비교; 예상/실제 PNG를 `--out`에 저장; 일치 exit 0, 불일치 1, 사용법 오류 2
+  - `verify-overlay [--data-dir <dir>] [--preset <id>] [--monitor <device>] [--expect-hidden] [--timeout <s> (5)] [--out <dir>]` -> 데이터 폴더의 설정(또는 플래그)에서 활성 프리셋과 모니터를 읽고 예상 창 위치를 계산, todo 11에서 만든 Platform `Capture/Backdrop`으로 #FF00FF 배경창을 위치 + 8 px로 띄우고 Must have 포그라운드 가져오기 규칙으로 앞에 놓은 뒤 `WindowAt(P)`가 배경창인지 확인, Eventually 방식으로 캡처해 배경 위 Core 렌더 합성과 비교(정확 일치; 45도 회전은 허용 오차 2), `--expect-hidden`이면 배경색만인지 비교; 예상/실제 PNG를 `--out`에 저장; 일치 exit 0, 불일치 1, 사용법 오류 2. 데이터 폴더는 읽기만 한다: `settings.json`이 없거나 손상됐거나 더 새로운 버전이면 기본값으로 읽고 파일을 만들거나 이름을 바꾸거나 다시 쓰지 않는다(`SettingsStore.Read`)
   - `ico <out.ico>`(builtin.default를 16/32/48 투명 캔버스에 맞춰 그리고 32bpp BMP/DIB 항목으로 ICO 작성)
   사용법 오류는 사용법 문구와 exit 2(validate의 BROKEN도 exit 2를 쓰되 `BROKEN:`을 출력).
 

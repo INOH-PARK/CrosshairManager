@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using CrosshairManager.Core.Settings;
 using Windows.Win32;
@@ -47,6 +49,15 @@ public sealed unsafe class GlobalHotkeys : IDisposable
 
     /// <summary>Raised with the registered id when its hotkey is pressed (on the hotkey thread).</summary>
     public event Action<string>? Pressed;
+
+    /// <summary>
+    /// Raised on the hotkey thread with an exception a <see cref="Pressed"/> handler threw. The exception is caught there so it
+    /// cannot unwind through the window procedure; without a subscriber it is written to Trace.
+    /// </summary>
+    public event Action<Exception>? HandlerFailed;
+
+    /// <summary>The message-only window that owns the registrations (tests post WM_HOTKEY to it).</summary>
+    internal nint WindowHandle => (nint)_hwnd.Value;
 
     public bool TryRegister(string id, HotkeyGesture gesture, out int win32Error)
     {
@@ -99,9 +110,28 @@ public sealed unsafe class GlobalHotkeys : IDisposable
             return;
         }
 
-        _work.Enqueue(() => PInvoke.DestroyWindow(_hwnd));
-        PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0);
-        _thread.Join(CallTimeout);
+        // Hotkeys belong to _hwnd: release them on its own thread before the window goes away.
+        _work.Enqueue(() =>
+        {
+            foreach (var atom in _atomToId.Keys)
+            {
+                PInvoke.UnregisterHotKey(_hwnd, atom);
+            }
+
+            _atomToId.Clear();
+            _idToAtom.Clear();
+            PInvoke.DestroyWindow(_hwnd);
+        });
+        if (!PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0))
+        {
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "PostMessage to the hotkey window failed; hotkeys were not released.");
+        }
+
+        if (!_thread.Join(CallTimeout))
+        {
+            throw new TimeoutException("Hotkey thread did not exit within 5 seconds.");
+        }
+
         _ready.Dispose();
     }
 
@@ -109,26 +139,38 @@ public sealed unsafe class GlobalHotkeys : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed != 0, this);
         var result = false;
-        using var done = new ManualResetEventSlim();
+        Exception? error = null;
+        // A TaskCompletionSource needs no disposal, so a work item that runs after a timeout cannot throw inside the window procedure.
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _work.Enqueue(() =>
         {
+            // Rethrown on the calling thread below instead of unwinding through the window procedure.
             try
             {
                 result = func();
             }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
             finally
             {
-                done.Set();
+                done.TrySetResult();
             }
         });
         if (!PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0))
         {
-            throw new InvalidOperationException("PostMessage to hotkey window failed.");
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "PostMessage to the hotkey window failed.");
         }
 
-        if (!done.Wait(CallTimeout))
+        if (!done.Task.Wait(CallTimeout))
         {
             throw new TimeoutException("Hotkey thread did not respond.");
+        }
+
+        if (error is not null)
+        {
+            ExceptionDispatchInfo.Throw(error);
         }
 
         return result;
@@ -151,7 +193,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
                 };
                 if (PInvoke.RegisterClassEx(wc) == 0)
                 {
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
 
                 registered = true;
@@ -163,7 +205,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
 
                 if (_hwnd.IsNull)
                 {
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
             }
         }
@@ -186,11 +228,6 @@ public sealed unsafe class GlobalHotkeys : IDisposable
             PInvoke.DispatchMessage(msg);
         }
 
-        foreach (var atom in _atomToId.Keys)
-        {
-            PInvoke.UnregisterHotKey(HWND.Null, atom);
-        }
-
         UnregisterClassName();
     }
 
@@ -204,6 +241,13 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         {
             PInvoke.UnregisterClass(name, ModuleInstance());
         }
+    }
+
+    private bool ReportHandlerFailure(Exception ex)
+    {
+        var handler = HandlerFailed;
+        handler?.Invoke(ex);
+        return handler is not null;
     }
 
     private LRESULT WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
@@ -222,7 +266,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         {
             if (_atomToId.TryGetValue((int)wParam.Value, out var id))
             {
-                Pressed?.Invoke(id);
+                CallbackGuard.Run(() => Pressed?.Invoke(id), ReportHandlerFailure, "hotkey Pressed");
             }
 
             return (LRESULT)0;

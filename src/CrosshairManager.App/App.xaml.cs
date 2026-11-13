@@ -38,7 +38,7 @@ public partial class App : Application
         }
 
         _log = new FileLog(args.DataDir);
-        _instance = SingleInstance.TryAcquire(args.DataDir, out var pidWriteError);
+        _instance = SingleInstance.TryAcquire(args.DataDir, _log, out var pidWriteError);
         if (_instance is null)
         {
             // Another instance owns this data folder; it was signaled to open its settings window.
@@ -71,8 +71,14 @@ public partial class App : Application
 
     private void ExitApplication(int exitCode)
     {
-        Cleanup();
-        Shutdown(exitCode);
+        try
+        {
+            Cleanup();
+        }
+        finally
+        {
+            Shutdown(exitCode);
+        }
     }
 
     /// <summary>Creates the settings window on first request, then shows and activates it (tray, hotkey, second launch, first run).</summary>
@@ -87,17 +93,24 @@ public partial class App : Application
         _settingsWindow.ShowAndActivate();
     }
 
+    /// <summary>Each step runs even when an earlier one throws; failures go to the log.</summary>
     private void Cleanup()
     {
         var window = _settingsWindow;
         _settingsWindow = null;
-        window?.PrepareForExit();
         var shell = _shell;
         _shell = null;
-        shell?.Dispose();
         var instance = _instance;
         _instance = null;
-        instance?.Dispose();
+        if (_log is null)
+        {
+            // Arguments were invalid: nothing was created.
+            return;
+        }
+
+        Teardown.Step(_log, "settings window", () => window?.PrepareForExit());
+        Teardown.Step(_log, "shell", () => shell?.Dispose());
+        Teardown.Step(_log, "single instance", () => instance?.Dispose());
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

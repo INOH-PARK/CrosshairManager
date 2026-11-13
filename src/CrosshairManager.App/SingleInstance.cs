@@ -2,6 +2,7 @@ using System.IO;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using CrosshairManager.App.Logging;
 using CrosshairManager.Core.Settings;
 using CrosshairManager.Platform.Windowing;
 
@@ -19,11 +20,13 @@ public sealed class SingleInstance : IDisposable
     private readonly Mutex _mutex;
     private readonly EventWaitHandle _open;
     private readonly string _pidFile;
+    private readonly FileLog _log;
     private RegisteredWaitHandle? _wait;
     private bool _disposed;
 
-    private SingleInstance(Mutex mutex, EventWaitHandle open, string pidFile)
+    private SingleInstance(Mutex mutex, EventWaitHandle open, string pidFile, FileLog log)
     {
+        _log = log;
         _mutex = mutex;
         _open = open;
         _pidFile = pidFile;
@@ -39,10 +42,11 @@ public sealed class SingleInstance : IDisposable
 
     /// <summary>
     /// Returns the owner handle, or null after signaling the running owner (the caller then exits 0).
-    /// <paramref name="pidWriteError"/> is set when the owner could not write <c>instance.pid</c>.
+    /// <paramref name="pidWriteError"/> is set when the owner could not write <c>instance.pid</c>; read failures go to <paramref name="log"/>.
     /// </summary>
-    public static SingleInstance? TryAcquire(string dataDir, out Exception? pidWriteError)
+    public static SingleInstance? TryAcquire(string dataDir, FileLog log, out Exception? pidWriteError)
     {
+        ArgumentNullException.ThrowIfNull(log);
         pidWriteError = null;
         var (mutexName, eventName) = Names(dataDir);
         var open = new EventWaitHandle(false, EventResetMode.AutoReset, eventName);
@@ -51,7 +55,7 @@ public sealed class SingleInstance : IDisposable
         if (!createdNew)
         {
             mutex.Dispose();
-            Foreground.AllowFor(ReadPid(pidFile) ?? Foreground.AnyProcess);
+            Foreground.AllowFor(ReadPid(pidFile, log) ?? Foreground.AnyProcess);
             open.Set();
             open.Dispose();
             return null;
@@ -67,7 +71,7 @@ public sealed class SingleInstance : IDisposable
             pidWriteError = ex;
         }
 
-        return new SingleInstance(mutex, open, pidFile);
+        return new SingleInstance(mutex, open, pidFile, log);
     }
 
     /// <summary>Invokes <paramref name="onOpenRequested"/> on a thread-pool thread each time a second launch signals.</summary>
@@ -87,7 +91,7 @@ public sealed class SingleInstance : IDisposable
 
         _disposed = true;
         _wait?.Unregister(null);
-        if (ReadPid(_pidFile) == Environment.ProcessId)
+        if (ReadPid(_pidFile, _log) == Environment.ProcessId)
         {
             try
             {
@@ -104,7 +108,7 @@ public sealed class SingleInstance : IDisposable
         _open.Dispose();
     }
 
-    private static int? ReadPid(string pidFile)
+    private static int? ReadPid(string pidFile, FileLog log)
     {
         try
         {
@@ -112,6 +116,7 @@ public sealed class SingleInstance : IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            log.Error("could not read " + pidFile, ex);
             return null;
         }
     }
