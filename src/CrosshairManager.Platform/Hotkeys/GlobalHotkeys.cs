@@ -140,7 +140,8 @@ public sealed unsafe class GlobalHotkeys : IDisposable
         ObjectDisposedException.ThrowIf(_disposed != 0, this);
         var result = false;
         Exception? error = null;
-        using var done = new ManualResetEventSlim();
+        // A TaskCompletionSource needs no disposal, so a work item that runs after a timeout cannot throw inside the window procedure.
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _work.Enqueue(() =>
         {
             // Rethrown on the calling thread below instead of unwinding through the window procedure.
@@ -154,7 +155,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
             }
             finally
             {
-                done.Set();
+                done.TrySetResult();
             }
         });
         if (!PInvoke.PostMessage(_hwnd, PInvoke.WM_APP, 0, 0))
@@ -162,7 +163,7 @@ public sealed unsafe class GlobalHotkeys : IDisposable
             throw new Win32Exception(Marshal.GetLastWin32Error(), "PostMessage to the hotkey window failed.");
         }
 
-        if (!done.Wait(CallTimeout))
+        if (!done.Task.Wait(CallTimeout))
         {
             throw new TimeoutException("Hotkey thread did not respond.");
         }

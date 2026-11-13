@@ -207,10 +207,10 @@ public sealed class AppShell : IAppShell, IDisposable
         }
 
         _disposed = true;
-        _tray?.Dispose();
-        _hotkeys?.Dispose();
-        _overlay?.Dispose();
-        _monitors?.Dispose();
+        Teardown.Step(_log, "tray", () => _tray?.Dispose());
+        Teardown.Step(_log, "hotkeys", () => _hotkeys?.Dispose());
+        Teardown.Step(_log, "overlay", () => _overlay?.Dispose());
+        Teardown.Step(_log, "monitors", () => _monitors?.Dispose());
         _log.Info("stopped");
     }
 
