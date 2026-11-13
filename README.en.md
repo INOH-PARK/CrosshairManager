@@ -18,11 +18,11 @@ A crosshair overlay for Windows. It draws your crosshair in a small transparent 
 
 Simple tab:
 
-![Settings window, Simple tab](docs/images/settings-simple.png)
+![Settings window, Simple tab](docs/images/settings-en-simple.png)
 
 Advanced tab with the language picker:
 
-![Settings window, Advanced tab in English](docs/images/settings-en.png)
+![Settings window, Advanced tab with the language picker](docs/images/settings-en-language.png)
 
 ## Usage
 

@@ -18,15 +18,15 @@ Windows용 크로스헤어 오버레이입니다. 화면 위에 작은 투명 �
 
 간단 탭:
 
-![설정 창 간단 탭](docs/images/settings-simple.png)
+![설정 창 간단 탭](docs/images/settings-ko-simple.png)
 
 고급 탭:
 
-![설정 창 고급 탭](docs/images/settings-advanced.png)
+![설정 창 고급 탭](docs/images/settings-ko-advanced.png)
 
-한국어 UI와 언어 선택:
+언어 선택:
 
-![한국어 설정 창](docs/images/settings-ko.png)
+![설정 창 언어 선택](docs/images/settings-ko-language.png)
 
 ## 사용법
 
