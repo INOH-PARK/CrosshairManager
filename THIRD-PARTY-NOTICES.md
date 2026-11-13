@@ -16,6 +16,7 @@ CrosshairManager는 아래 오픈소스 패키지를 사용합니다. 각 패키
 | 패키지 | 버전 | 라이선스 | 용도 |
 | --- | --- | --- | --- |
 | FlaUI.UIA3 | 5.0.0 | MIT License | UI 자동화 테스트에 씁니다. |
+| Microsoft.NET.Test.Sdk | 17.14.2 | MIT License | 테스트 실행 환경입니다. |
 | xunit | 2.9.3 | Apache License 2.0 | 테스트 프레임워크입니다. |
 | xunit.runner.visualstudio | 3.1.5 | Apache License 2.0 | 테스트 실행기입니다. |
 

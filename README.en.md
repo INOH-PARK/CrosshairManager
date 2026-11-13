@@ -21,7 +21,7 @@ The settings window is still being built, so screenshots will be added later.
 ## Usage
 
 1. Run `CrosshairManager.exe`. The first run shows a notice dialog. Read it and accept.
-2. Click the tray icon to open settings. Pick a preset or change values and the overlay updates right away.
+2. Double-click the tray icon, or right-click it and choose "Open settings", to open settings. Pick a preset or change values and the overlay updates right away.
 3. Run your game in **borderless** windowed mode (or windowed).
 4. To quit, choose Exit from the tray menu.
 
