@@ -85,6 +85,16 @@ CrosshairManager는 평범한 외부 창입니다. 게임에 코드를 주입하
 
 exe에 코드 서명이 없어서 처음 실행할 때 Windows SmartScreen이 경고할 수 있습니다. "추가 정보"를 누른 뒤 "실행"을 고르면 됩니다. 직접 빌드해서 써도 됩니다.
 
+실행하기 전에 내려받은 파일이 이 저장소에서 빌드한 원본인지 확인할 수 있습니다.
+
+```
+# 릴리스에 함께 올라간 .sha256 파일의 값과 같은지 비교
+Get-FileHash .\CrosshairManager-<버전>-win-x64.exe -Algorithm SHA256
+
+# GitHub CLI로 빌드 출처 증명 확인 (v0.1.1부터)
+gh attestation verify .\CrosshairManager-<버전>-win-x64.exe --repo INOH-PARK/CrosshairManager
+```
+
 ## 지원 환경
 
 Windows 11에서 테스트했습니다. Windows 10 1903 이상에서도 동작할 것으로 예상합니다(직접 테스트하지는 않았습니다). x64 전용입니다.
@@ -123,16 +133,9 @@ git push origin v1.2.3
 
 1번을 하지 않고 exe를 지웠다면 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`에서 `CrosshairManager` 값을 지우세요.
 
-## 코드 서명 정책 (Code signing policy)
+## 개인정보
 
-Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
-
-현재 서명 신청 중이며, 지금까지 배포한 릴리스는 서명되지 않았습니다. 승인 후에는 이 저장소의 GitHub Actions가 빌드한 파일만, 릴리스마다 승인자가 직접 확인한 뒤 서명합니다.
-
-- 커밋 작성자와 리뷰어: [INOH-PARK](https://github.com/INOH-PARK)
-- 서명 승인자: [INOH-PARK](https://github.com/INOH-PARK)
-
-개인정보: This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. 이 프로그램은 네트워크 통신 기능이 없고, 사용자 정보를 어디로도 보내지 않습니다.
+이 프로그램은 네트워크 통신 기능이 없고, 사용자 정보를 어디로도 보내지 않습니다.
 
 
 ## 라이선스

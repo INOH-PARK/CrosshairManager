@@ -81,6 +81,16 @@ The crosshair is a real window on your screen, so it shows up in anything you re
 
 The exe isn't code-signed, so Windows SmartScreen may warn you on first run. Click "More info", then "Run anyway". You can also build it yourself.
 
+Before running it, you can check that the download is the original file built from this repository.
+
+```
+# compare with the value in the .sha256 file attached to the release
+Get-FileHash .\CrosshairManager-<version>-win-x64.exe -Algorithm SHA256
+
+# verify the build provenance attestation with the GitHub CLI (v0.1.1 and later)
+gh attestation verify .\CrosshairManager-<version>-win-x64.exe --repo INOH-PARK/CrosshairManager
+```
+
 ## Supported systems
 
 Tested on Windows 11. Windows 10 1903 or later is expected to work but hasn't been tested. x64 only.
@@ -119,16 +129,9 @@ git push origin v1.2.3
 
 If you deleted the exe without step 1, remove the `CrosshairManager` value from `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
 
-## Code signing policy
+## Privacy
 
-Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
-
-The application is pending, and releases published so far are unsigned. Once approved, only files built by this repository's GitHub Actions are signed, and an approver reviews every release before it is signed.
-
-- Committers and reviewers: [INOH-PARK](https://github.com/INOH-PARK)
-- Approvers: [INOH-PARK](https://github.com/INOH-PARK)
-
-Privacy policy: This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. It contains no networking code.
+This program has no networking code and does not send any information anywhere.
 
 
 ## License
